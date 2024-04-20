@@ -1,4 +1,4 @@
-const  config_url= "http://192.168.2.48:8012";
+const  config_url= "https://www.baidu.com/";
 const request = (url, data = {}, method = 'GET') => {
 	return new Promise((resolve, reject) => {
 		uni.request({
@@ -9,19 +9,16 @@ const request = (url, data = {}, method = 'GET') => {
 				'X-Requested-With': 'XMLHttpRequest',
 				"Accept": "application/json",
 				"Content-Type": 'application/json',
-				"app-id": "0-0",
-				"app-ts": "1711765157",
-				"app-sig": "ab3b67e0fd340490d072b8a2788bc4e5",
 			},
 			dataType: 'json',
 			success: (res) => {
 				const responseData = interceptor(res.data);
-				if (responseData.status.code === 'ok' || responseData.code === 500 ||responseData
+				if (responseData.code === 200 || responseData.code === 500 ||responseData
 					.code === 4025) {
 					resolve(responseData);
 				} else {
-					// throwErr(res)
-					reject(responseData);
+					throwErr(res)
+					reject(res);
 				}
 			},
 			fail: function(err) {
@@ -60,7 +57,7 @@ function interceptor(response) {
 			duration: 2000,
 			complete: () => {
 				uni.reLaunch({
-					url: '/pages/Login/index',
+					url: '/pages/index/index',
 				});
 			},
 		});
