@@ -9,7 +9,7 @@
 		{
 			"path": "pages/Detail/index",
 			"style": {
-				"navigationBarTitleText": "工单详情"
+				"navigationBarTitleText": "项目详情"
 			}
 		},
 		{
@@ -29,18 +29,55 @@
 			"style": {
 				"navigationBarTitleText": "登录"
 			}
+		},
+		{
+			"path": "pages/Product/index",
+			"style": {
+				"navigationBarTitleText": "项目管理"
+			}
+		},
+		{
+			"path": "pages/Product/productForm",
+			"style": {
+				"navigationBarTitleText": "新建项目"
+			}
+		},
+		{
+			"path": "pages/Product/detail",
+			"style": {
+				"navigationBarTitleText": "电气项目详情"
+			}
+		},
+		{
+			"path": "pages/Detail/workLog",
+			"style": {
+				"navigationBarTitleText": "日志"
+			}
+		},
+		{
+			"path": "pages/Electrical/index",
+			"style": {
+				"navigationBarTitleText": "电气项目计划表"
+			}
+		},
+		{
+			"path": "pages/Detail/checkUser",
+			"style": {
+				"navigationBarTitleText": "选择用户"
+			}
 		}
 	],
 	"easycom": {
 		"custom": {
 			"^u--(.*)": "uview-plus/components/u-$1/u-$1.vue",
 			"^up-(.*)": "uview-plus/components/u-$1/u-$1.vue",
-	        "^u-([^-].*)": "uview-plus/components/u-$1/u-$1.vue"
+	        "^u-([^-].*)": "uview-plus/components/u-$1/u-$1.vue",
+			"^u-(.*)": "uview-plus/components/u-$1/u-$1.vue"
 		}
 	},
 	"tabBar": {
 		"color": "#666",
-		"selectedColor": "#f00",
+		"selectedColor": "#3ea1fd",
 		"backgroundColor": "#fff",
 		"borderStyle": "black",
 		"list": [

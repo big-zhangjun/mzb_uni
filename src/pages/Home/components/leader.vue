@@ -57,18 +57,18 @@ const newOrder = () => {
 <style lang="less" scoped>
 .page {
     background-color: #f2f2f2;
-    margin-top: 32rpx;
+    margin-top: 24rpx;
     padding-top: 32rpx;
     min-height: 100vh;
 }
 
 .card {
-    width: calc(100vw - 72rpx);
-    background: linear-gradient( 160deg, #DAAF7E 0%, #B37748 100%);
+    width: calc(100vw - 48rpx);
+    background: linear-gradient( 160deg, rgb(62, 161, 253) 0%, rgb(55, 133, 250) 100%);
     border-radius: 20rpx;
     margin: 0 auto;
     box-sizing: border-box;
-    padding: 60rpx 100rpx 30rpx;
+    padding: 60rpx 60rpx 30rpx;
     margin-top: 0;
 
     .content {
@@ -83,7 +83,7 @@ const newOrder = () => {
         color: #fff;
 
         .label {
-            font-size: 20rpx;
+            font-size: 28rpx;
         }
 
         .num {
@@ -93,7 +93,7 @@ const newOrder = () => {
     }
 
     .btn {
-        color: #93673D;
+        color: rgb(55, 133, 250);
         background-color: #fff;
         width: 180rpx;
         font-size: 24rpx;
@@ -136,7 +136,7 @@ const newOrder = () => {
     margin-top: 36rpx;
     background-color: #fff;
     box-sizing: border-box;
-    width: calc(100vw - 72rpx);
+    width: calc(100vw - 48rpx);
     .item {
         padding: 36rpx;
         border-bottom:1px rgb(238, 238, 238) solid ;
