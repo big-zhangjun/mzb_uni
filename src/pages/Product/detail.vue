@@ -1,57 +1,178 @@
 <template>
     <view class="pages">
-        <view class="card">
-            <view class="item">
-                <view class="label">客户名称：</view>
-                <view class="value">{{ detail.customerName }}</view>
-            </view>
-            <view class="item">
-                <view class="label">产品名称：</view>
-                <view class="value">{{ detail.productName }}</view>
-            </view>
-            <view class="item">
-                <view class="label">规格型号：</view>
-                <view class="value">{{ detail.model }}</view>
-            </view>
-            <view class="item">
-                <view class="label">优先级：</view>
-                <view class="value">P{{ detail.level }}</view>
-            </view>
+        <view class="bg">
         </view>
         <view class="card">
-            <view class="item">
-                <view class="label">电气柜负责人：</view>
-                <view class="value">{{ detail.ecRepName || '--' }}</view>
+            <view class="top">
+                <view class="title">{{ detail.customerName }}</view>
+                <view class="flex">
+                    <view class="number">产品名称：{{ detail.productName }}</view>
+                    <view class="number">项目编号：{{ detail.number }}</view>
+                </view>
             </view>
-            <view class="item">
-                <view class="label">电气柜安装状态：</view>
-                <view class="value">{{ getStatus(detail.ecStatus) }}</view>
-            </view>
-            <view class="item">
-                <view class="label">电气柜开始日期：</view>
-                <view class="value">{{ detail.ecStartDate }}</view>
-            </view>
-            <view class="item">
-                <view class="label">电气柜结束日期：</view>
-                <view class="value">{{ detail.ecEndDate }}</view>
+            <view class="bottom">
+                <view class="item">
+                    <view class="label">规格/型号</view>
+                    <view class="value">{{ detail.model || '--' }}</view>
+                </view>
+                <view class="item">
+                    <view class="label">罐体尺寸</view>
+                    <view class="value">{{ detail.tankSize || '--' }}</view>
+                </view>
+                <view class="item">
+                    <view class="label">优先等级</view>
+                    <view class="value">{{ 'p'+ detail.level || '--' }}</view>
+                </view>
             </view>
         </view>
-        <view class="card">
+        <view class="info mt border">
             <view class="item">
-                <view class="label">安装负责人：</view>
-                <view class="value">{{ detail.siRepName || '--' }}</view>
+                <view class="label">工作压力(MPa)</view>
+                <view class="value">{{ detail.workingPressure || '--' }}</view>
             </view>
             <view class="item">
-                <view class="label">安装开始时间：</view>
-                <view class="value">{{ detail.siStartTime }}</view>
+                <view class="label">设计压力(MPa)</view>
+                <view class="value">{{ detail.designPressure || '--' }}</view>
             </view>
             <view class="item">
-                <view class="label">安装结束时间：</view>
-                <view class="value">{{ detail.siEndTime }}</view>
+                <view class="label">工作温度(℃)</view>
+                <view class="value">{{ detail.workingTemperature || '--' }}</view>
             </view>
             <view class="item">
-                <view class="label">现场安装情况：</view>
-                <view class="value">{{ getStatus(detail.siStatus) }}</view>
+                <view class="label">罐体厚度(mm)</view>
+                <view class="value">{{ detail.tankthickness || '--' }}</view>
+            </view>
+            <view class="item">
+                <view class="label">球冠封头厚度(mm)</view>
+                <view class="value">{{ detail.sphericalCrownThickness || '--' }}</view>
+            </view>
+        </view>
+        <view class="info pt border">
+            <view class="item">
+                <view class="label">椭圆封头厚度(mm)</view>
+                <view class="value">{{ detail.ellipticalHeadThickness || '--' }}</view>
+            </view>
+            <view class="item">
+                <view class="label">加热功率(kw)</view>
+                <view class="value">{{ detail.heatingPower || '--' }}</view>
+            </view>
+            <view class="item">
+                <view class="label">循环风机</view>
+                <view class="value">{{ detail.circulatingFan || '--' }}</view>
+            </view>
+            <view class="item">
+                <view class="label">热电偶</view>
+                <view class="value">{{ detail.thermocouple || '--' }}</view>
+            </view>
+            <view class="item">
+                <view class="label">检测口</view>
+                <view class="value">{{ detail.inspectionPort || '--' }}</view>
+            </view>
+        </view>
+        <view class="info pt border">
+            <view class="item">
+                <view class="label">罐门结构</view>
+                <view class="value">{{ detail.doorStructure || '--' }}</view>
+            </view>
+            <view class="item">
+                <view class="label">开门方向</view>
+                <view class="value">{{ detail.openingDirection || '--' }}</view>
+            </view>
+            <view class="item">
+                <view class="label">真空路数</view>
+                <view class="value">{{ detail.vacuumNumber || '--' }}</view>
+            </view>
+            <view class="item">
+                <view class="label">真空泵</view>
+                <view class="value">{{ detail.vacuumPump || '--' }}</view>
+            </view>
+            <view class="item">
+                <view class="label">缓冲罐(m³)</view>
+                <view class="value">{{ detail.bufferTank || '--' }}</view>
+            </view>
+        </view>
+        <view class="info pt border">
+            <view class="item">
+                <view class="label">真空度</view>
+                <view class="value">{{ detail.vacuumDegree || '--' }}</view>
+            </view>
+            <view class="item">
+                <view class="label">储气罐规格</view>
+                <view class="value">{{ detail.assModel || '--' }}</view>
+            </view>
+            <view class="item">
+                <view class="label">储气罐工作压力(MPa)</view>
+                <view class="value">{{ detail.assWorkingPressure || '--' }}</view>
+            </view>
+            <view class="item">
+                <view class="label">储气罐筒体厚度(mm)</view>
+                <view class="value">{{ detail.assTankthickness || '--' }}</view>
+            </view>
+            <view class="item">
+                <view class="label">储气罐封头厚度(mm)</view>
+                <view class="value">{{ detail.assHeadThickness || '--' }}</view>
+            </view>
+        </view>
+        <view class="info pt border">
+            <view class="item">
+                <view class="label">空压机</view>
+                <view class="value">{{ detail.airCompressor || '--' }}</view>
+            </view>
+            <view class="item">
+                <view class="label">制氮机</view>
+                <view class="value">{{ detail.nitrogenPlant || '--' }}</view>
+            </view>
+            <view class="item">
+                <view class="label">增压机</view>
+                <view class="value">{{ detail.supercharger || '--' }}</view>
+            </view>
+            <view class="item">
+                <view class="label">罐内小车</view>
+                <view class="value">{{ detail.carInTank || '--' }}</view>
+            </view>
+            <view class="item">
+                <view class="label">罐外小车</view>
+                <view class="value">{{ detail.carOutTank || '--' }}</view>
+            </view>
+        </view>
+        <view class="info pt border">
+            <view class="item">
+                <view class="label">桥架</view>
+                <view class="value">{{ detail.bridgeTray || '--' }}</view>
+            </view>
+            <view class="item">
+                <view class="label">牵引车</view>
+                <view class="value">{{ detail.tractor || '--' }}</view>
+            </view>
+            <view class="item">
+                <view class="label">泄压阀</view>
+                <view class="value">{{ detail.pressureReliefValve || '--' }}</view>
+            </view>
+            <view class="item">
+                <view class="label">进气阀组</view>
+                <view class="value">{{ detail.intakeValveGroup || '--' }}</view>
+            </view>
+            <view class="item">
+                <view class="label">排气阀组</view>
+                <view class="value">{{ detail.exhaustValveGroup || '--' }}</view>
+            </view>
+        </view>
+        <view class="info pt border">
+            <view class="item">
+                <view class="label">容积(m³)</view>
+                <view class="value">{{ detail.volume || '--' }}</view>
+            </view>
+            <view class="item">
+                <view class="label">冷却阀组</view>
+                <view class="value">{{ detail.coolingValveGroup || '--' }}</view>
+            </view>
+            <view class="item">
+                <view class="label">排空阀组</view>
+                <view class="value">{{ detail.emptyValveGroup || '--' }}</view>
+            </view>
+            <view class="item">
+                <view class="label">气冷阀组</view>
+                <view class="value">{{ detail.airCooledValve || '--' }}</view>
             </view>
         </view>
         <view class="delete" @click="handleDelete">删除</view>
@@ -66,13 +187,14 @@
 <script setup>
 import { ref } from 'vue'
 import * as $http from '../../request/index'
-import { onLoad } from '@dcloudio/uni-app';
+import { onLoad, onShow } from '@dcloudio/uni-app';
 const handleEdit = () => {
     uni.navigateTo({
         url: `/pages/Product/productForm?type=edit&id=${data.value}&number=${detail.value.number}`
     })
 }
 let data = ref("")
+let number = ref("")
 const getStatus = (v) => {
     let list =
         [
@@ -105,7 +227,7 @@ const detail = ref({})
 onLoad((options) => {
     const { id, number } = options
     data.value = +id
-    getData(+id, number)
+    number.value = number
 })
 const getData = (id, number) => {
     let params = {
@@ -117,6 +239,10 @@ const getData = (id, number) => {
     })
 
 }
+onShow(()=> {
+    getData(+data.value , number.value)
+
+})
 const handleDelete = () => {
     show.value = true
 }
@@ -138,48 +264,104 @@ const confirm = () => {
 <style lang="less" scoped>
 .pages {
     height: 100vh;
-    background: #F2F2F7;
-    padding: 30rpx;
+    position: relative;
+    overflow: auto;
+
+    .bg {
+        background: rgb(55, 133, 250);
+        height: 160rpx;
+        position: absolute;
+        width: 100%;
+        top: 0;
+        left: 0;
+    }
+
+    .flex {
+        display: flex;
+        justify-content: space-between;
+    }
 
     .card {
+        width: calc(100% - 60rpx);
         background-color: #fff;
-        width: 100%;
+        border-radius: 20rpx;
+        padding: 30rpx;
         box-sizing: border-box;
-        border-radius: 12rpx;
-        padding: 0 30rpx;
-        margin-bottom: 30rpx;
+        position: relative;
+        z-index: 10;
+        margin: 0 auto;
+        margin-top: 50rpx;
+        margin-bottom: 40rpx;
+        box-shadow: 0rpx 6rpx 18rpx 0rpx rgba(70, 66, 61, 0.1);
 
-        .item {
-            display: flex;
-            padding: 32rpx 0;
-            align-items: center;
-            justify-content: space-between;
-            border-bottom: 1px solid #EBEBEB;
+        .top {
+            border-bottom: solid #ebebeb 1px;
+            padding-bottom: 20rpx;
 
-            &:last-child {
-                border: none;
+            .title {
+                font-size: 32rpx;
+                font-weight: bold;
+                color: #12151b;
             }
+
+            .number {
+                margin: 20rpx 0;
+                font-size: 28rpx;
+                color: #666;
+            }
+        }
+
+        .bottom {
+            display: flex;
+            justify-content: space-between;
+            text-align: center;
+            margin: 0 20rpx;
+            margin-top: 30rpx;
+            color: rgb(97, 103, 129);
+            font-size: 28rpx;
 
             .label {
-                font-size: 32rpx;
-                color: #12151b;
-                font-weight: bold;
-                min-width: 200rpx;
-            }
-
-            .value {
-                color: #2E313C;
-                font-size: 32rpx;
-                flex: 1;
-                text-align: right;
+                color: rgb(160, 167, 193);
+                margin-bottom: 8rpx;
             }
         }
     }
 
+    .info {
+        padding: 0 30rpx;
+        display: flex;
+        flex-direction: column;
+        gap: 30rpx;
+
+        .item {
+            display: flex;
+            font-size: 28rpx;
+            justify-content: space-between;
+
+            .label {
+                color: rgb(97, 103, 129);
+            }
+
+            .value {
+                color: #12151b;
+            }
+        }
+    }
+
+    .border {
+        border-bottom: solid 20rpx rgb(243, 244, 246);
+        padding-bottom: 30rpx;
+    }
+    .pt {
+        padding-top: 30rpx;
+    }
 }
 
 .delete {
-    width: 100%;
+    width: calc(100% - 60rpx);
+    margin: 0 auto;
+    margin-top: 40rpx;
+    margin-bottom: 40rpx;
     line-height: 88rpx;
     background: linear-gradient(160deg, rgb(62, 161, 253) 0%, rgb(55, 133, 250) 100%);
     border-radius: 8rpx;

@@ -77,7 +77,6 @@ const getEpStatus = (v) => {
 .page {
     background-color: #f2f2f2;
     padding-top: 32rpx;
-    min-height: 100vh;
     padding-bottom: 30rpx;
 }
 

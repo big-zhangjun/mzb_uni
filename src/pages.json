@@ -9,7 +9,7 @@
 		{
 			"path": "pages/Detail/index",
 			"style": {
-				"navigationBarTitleText": "项目详情"
+				"navigationBarTitleText": "电气项目详情"
 			}
 		},
 		{
@@ -45,7 +45,9 @@
 		{
 			"path": "pages/Product/detail",
 			"style": {
-				"navigationBarTitleText": "电气项目详情"
+				"navigationBarTitleText": "项目详情",
+				"navigationBarBackgroundColor": "#3785fa", 
+				"navigationBarTextStyle": "white" 
 			}
 		},
 		{
@@ -71,7 +73,7 @@
 		"custom": {
 			"^u--(.*)": "uview-plus/components/u-$1/u-$1.vue",
 			"^up-(.*)": "uview-plus/components/u-$1/u-$1.vue",
-	        "^u-([^-].*)": "uview-plus/components/u-$1/u-$1.vue",
+			"^u-([^-].*)": "uview-plus/components/u-$1/u-$1.vue",
 			"^u-(.*)": "uview-plus/components/u-$1/u-$1.vue"
 		}
 	},

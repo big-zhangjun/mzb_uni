@@ -168,7 +168,7 @@ const getDetail = async () => {
         id: +data.value.id,
         number: data.value.number
     }
-    const res = await $http.post("/project/get_project_info", params)
+    const res = await $http.post("/project/get_ep_info", params)
     detail.value = res.data
 }
 // 更新详情

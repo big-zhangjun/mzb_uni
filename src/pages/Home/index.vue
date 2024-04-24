@@ -1,5 +1,5 @@
 <template>
-    <view>
+    <view class="pages">
         <view class="search-box">
             <input class="search" v-model="customerName" type="text" placeholder="请输入搜索关键字" @input="handleSearch">
             <view class="filter" @click="handleFilter">
@@ -143,7 +143,7 @@ const getData = () => {
         pageSize: 10,
         pageIndex: 1
     }
-    $http.post("/project/get_project_list", params).then(res => {
+    $http.post("/project/get_ep_list", params).then(res => {
         productList.value = res.data.records
     })
 }
@@ -184,10 +184,16 @@ getData()
     box-sizing: border-box;
     flex: 1;
 }
-
+.pages {
+    background-color: #f2f2f2;
+    min-height: 100vh;
+}
 .search-box {
-    width: calc(100vw - 48rpx);
+    width: calc(100vw);
+    background-color: #fff;
+    padding: 0 24rpx;
     margin: 0 auto;
+    box-sizing: border-box;
     margin-top: 24rpx;
     padding-bottom: 24rpx;
     align-items: center;
