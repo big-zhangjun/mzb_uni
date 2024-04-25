@@ -329,7 +329,7 @@ const handleReset = () => {
     position: fixed;
     width: 100rpx;
     height: 100rpx;
-    background: linear-gradient(160deg, #E2C18E 0%, #A56239 100%);
+    background: linear-gradient(160deg, rgb(62, 161, 253) 0%, rgb(55, 133, 250) 100%);
     box-shadow: 0rpx 4rpx 12rpx 0rpx rgba(175, 113, 72, 0.45);
     right: 30rpx;
     bottom: 137rpx;

@@ -15,7 +15,7 @@
             <view class="position" @click="getPosoition">自动定位</view>
         </view>
         <view class="item">
-            <view class="label required">3.用户信息：</view>
+            <view class="label required">3.项目信息：</view>
             <view class="value" :class="{ actove: show }" @click="show = true"><text>{{ formData.projectName || '请用户信息'
                     }}</text><up-icon :name="show ? 'arrow-up-fill' : 'arrow-down-fill'"
                     color="rgba(8, 14, 23, 0.4)"></up-icon></view>
@@ -117,7 +117,7 @@ const handleConfirm = () => {
 const getProjectList = async () => {
     const params = {
         pageIndex: 1,
-        pageSize: 10
+        pageSize: 100
     }
     const res = await $http.post("/project/get_project_list", params)
     projectList.value = res.data.records.map(item => {

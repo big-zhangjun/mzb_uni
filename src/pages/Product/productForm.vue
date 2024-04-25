@@ -239,7 +239,7 @@ const form = ref([
         },
         {
             label: "排气阀组",
-            key: "exhaustvalveGroup",
+            key: "exhaustValveGroup",
             value: ""
         },
         {
