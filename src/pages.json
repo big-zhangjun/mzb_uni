@@ -22,8 +22,8 @@
 			"path": "pages/Mine/index",
 			"style": {
 				"navigationBarTitleText": "我的",
-				"navigationBarBackgroundColor": "#3785fa", 
-				"navigationBarTextStyle": "white" 
+				"navigationBarBackgroundColor": "#3785fa",
+				"navigationBarTextStyle": "white"
 			}
 		},
 		{
@@ -36,20 +36,6 @@
 			"path": "pages/Product/index",
 			"style": {
 				"navigationBarTitleText": "项目管理"
-			}
-		},
-		{
-			"path": "pages/Product/productForm",
-			"style": {
-				"navigationBarTitleText": "新建项目"
-			}
-		},
-		{
-			"path": "pages/Product/detail",
-			"style": {
-				"navigationBarTitleText": "项目详情",
-				"navigationBarBackgroundColor": "#3785fa", 
-				"navigationBarTextStyle": "white" 
 			}
 		},
 		{
@@ -69,6 +55,52 @@
 			"style": {
 				"navigationBarTitleText": "选择用户"
 			}
+		},
+		{
+			"path": "pages/Product/productForm",
+			"style": {
+				"navigationBarTitleText": "新建项目"
+			}
+		},
+		{
+			"path": "pages/Product/detail",
+			"style": {
+				"navigationBarTitleText": "项目详情",
+				"navigationBarBackgroundColor": "#3785fa",
+				"navigationBarTextStyle": "white"
+			}
+		},
+		{
+			"path": "pages/Notice/index",
+			"style": {
+				"navigationBarTitleText": "公告详情"
+			}
+		},
+		{
+			"path": "pages/Statistics/index",
+			"style": {
+				"navigationBarTitleText": "出差分布"
+			}
+		}
+	],
+	"subPackages": [
+		{
+			"root": "subpkg1",
+			"pages": [
+				
+				{
+					"path": "pages/Mine/resetPassword",
+					"style": {
+						"navigationBarTitleText": "修改密码"
+					}
+				},
+				{
+					"path": "pages/Mine/info",
+					"style": {
+						"navigationBarTitleText": "用户信息"
+					}
+				}
+			]
 		}
 	],
 	"easycom": {

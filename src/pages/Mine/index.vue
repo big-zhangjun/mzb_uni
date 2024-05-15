@@ -2,14 +2,31 @@
     <view class="pages">
         <view class="bg"></view>
         <view class="card">
-            <view class="awater"></view>
+            <view class="awater">
+                <image class="user" width="100" height="10" mode="aspectFill" src="../../static/images/user.png" alt="">
+                </image>
+            </view>
             <view class="info">
                 <view class="name">{{ user.userName }}</view>
                 <view class="position">{{ user.roleName }}</view>
             </view>
         </view>
-        <view class="logout" @click="show=true">退出登录</view>
-        <up-modal showCancelButton @cancel="show=false" @confirm="logout" :show="show" title="提示" content='确认退出登录？'></up-modal>
+        <view class="card m25 nf">
+            <view class="title">基本信息</view>
+            <view class="item" @click="resetPassword">
+                <up-icon name="lock-open" color="#12151b" size="24"></up-icon>
+                <view class="label">修改密码</view>
+                <up-icon name="arrow-right" color="rgb(144,157,153)" size="14"></up-icon>
+            </view>
+            <view class="item" @click="editUser">
+                <up-icon name="list-dot" color="#12151b" size="24"></up-icon>
+                <view class="label">修改信息</view>
+                <up-icon name="arrow-right" color="rgb(144,157,153)" size="14"></up-icon>
+            </view>
+        </view>
+        <view class="logout" @click="show = true">退出登录</view>
+        <up-modal showCancelButton @cancel="show = false" @confirm="logout" :show="show" title="提示"
+            content='确认退出登录？'></up-modal>
     </view>
 </template>
 
@@ -27,6 +44,17 @@ const show = ref(false)
 onLoad(() => {
     user.value = uni.getStorageSync('user')
 })
+const resetPassword = () => {
+    uni.navigateTo({
+        url: "/subpkg1/pages/Mine/resetPassword"
+    })
+}
+
+const editUser = () => {
+    uni.navigateTo({
+        url: "/subpkg1/pages/Mine/info"
+    })
+}
 </script>
 
 <style lang="scss" scoped>
@@ -55,18 +83,42 @@ onLoad(() => {
         z-index: 1;
         position: relative;
         box-sizing: border-box;
-        border-radius: 20rpx;
+        border-radius: 16rpx;
         margin: 0 auto;
         display: flex;
         align-items: center;
-        margin-top: 75rpx;
         gap: 30rpx;
-
+        margin-top: 75rpx;
+        .title {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 20rpx;
+        }
+        .item {
+            display: flex;
+            justify-content: space-between;
+            height: 110rpx;
+            align-items: center;
+            border-bottom: 1px rgb(247, 247, 247) solid;
+            .label {
+                color: #12151b;
+                margin-right: auto;
+                margin-left: 20rpx;
+            }
+            &:last-child {
+                border: none;
+            }
+        }
         .awater {
             width: 100rpx;
             height: 100rpx;
             background-color: #e2e2e2;
             border-radius: 50%;
+
+            .user {
+                width: 100rpx;
+                height: 100rpx;
+            }
         }
 
         .info {
@@ -82,6 +134,13 @@ onLoad(() => {
                 color: #aaaaaa;
             }
         }
+    }
+
+    .m25 {
+        
+        display: block;
+        margin-top: 25rpx;
+        padding-bottom: 0;
     }
 
     .logout {

@@ -7,6 +7,9 @@
             <image mode="aspectFit" class="icon" src="../../static/filter.png"></image>
         </view>
     </view>
+    <view class="tabs">
+        <up-tabs :list="list1" @click="handleTabClick"></up-tabs>
+    </view>
     <view class="pages">
         <view class="card" v-for="item in list" :key="item.id" @click="goDetail(item)" v-if="list.length">
             <view class="header">
@@ -40,7 +43,7 @@
 <script setup>
 import { ref } from 'vue'
 import filter from "../../components/Filter.vue";
-import { onShow } from '@dcloudio/uni-app';
+import { onReachBottom, onShow } from '@dcloudio/uni-app';
 import * as $http from '../../request/index'
 const list = ref([])
 const customerName = ref("")
@@ -49,6 +52,12 @@ const param = ref({
     level: 0,
     productName: ''
 })
+const list1 = ref([
+    { name: '已完成', status: 4 },
+    { name: '未完成', status: 2 },
+]);
+const status = ref(4)
+
 const filterData = ref([
     {
         title: "产品名称",
@@ -109,6 +118,13 @@ const filterData = ref([
         ]
     }
 ])
+const totalPage = ref(1)
+onReachBottom(() => {
+    if (pageIndex.value >= totalPage.value) return
+    pageIndex.value++
+    getData()
+})
+const pageIndex = ref(1)
 const handleFilter = () => {
     show.value = true
 }
@@ -129,6 +145,12 @@ const goDetail = (data) => {
         url: `/pages/Detail/index?id=${data.id}&number=${data.number}`
     })
 }
+const handleTabClick = (v) => {
+    status.value = v.status
+    pageIndex.value = 1
+    list.value = []
+    getData()
+}
 onShow(() => {
     getData()
 })
@@ -140,10 +162,12 @@ const getData = () => {
         productName: param.value.productName,
         level: param.value.level,
         pageSize: 10,
-        pageIndex: 1
+        status: status.value,
+        pageIndex: pageIndex.value
     }
-    $http.post("/project/get_project_list", params).then(res => {
-        list.value = res.data.records
+    $http.post("/project/get_ep_list", params).then(res => {
+        list.value = [...list.value, ...res.data.records]
+        totalPage.value = res.data.totalPage
     })
 }
 // 获取颜色class
@@ -164,6 +188,7 @@ const handleConfirm = () => {
             param.value[item.key] = item.type == 'number' ? v.join("") ? +v.join("") : 0 : v.join("")
         }
     })
+    list.value = []
     show.value = false
     getData()
 }
@@ -221,6 +246,21 @@ const handleReset = () => {
     }
 }
 
+.tabs {
+    position: sticky;
+    top: 152rpx;
+
+    &:deep(.u-tabs__wrapper__nav__item) {
+        width: 50%;
+        box-sizing: border-box;
+    }
+
+    background-color: #fff;
+    padding-bottom: 24rpx;
+    box-shadow: 0rpx 6rpx 18rpx 0rpx rgba(70, 66, 61, 0.1);
+
+}
+
 .pages {
     // min-height: 100vh;
     background: linear-gradient(180deg, #FFFFFF 0%, #F2F3F5 100%);
@@ -228,7 +268,7 @@ const handleReset = () => {
     display: flex;
     flex-direction: column;
     gap: 30rpx;
-    min-height: 100vh;
+    min-height: 73vh;
 
     .card {
         width: 100%;

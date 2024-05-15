@@ -1,11 +1,11 @@
 <template>
     <view class="pages">
         <view class="search-box">
-            <input class="search" v-model="customerName" type="text" placeholder="请输入搜索关键字" @input="handleSearch">
-            <view class="filter" @click="handleFilter">
+            <input class="search" v-model="keyWord" type="text" placeholder="请输入搜索关键字" @input="handleSearch">
+            <!-- <view class="filter" @click="handleFilter">
                 <text>筛选</text>
                 <image mode="aspectFit" class="icon" src="../../static/filter.png"></image>
-            </view>
+            </view> -->
         </view>
         <!-- 菜单 -->
         <menus></menus>
@@ -66,7 +66,7 @@ const handleSearch = debounce(() => {
     // 处理搜索逻辑
 }, 300); // 设置防抖延迟时间，单位为毫秒
 
-const customerName = ref("")
+const keyWord = ref("")
 const close = () => {
     show.value = false
 }
@@ -95,6 +95,10 @@ const filterData = ref([
                 id: "固化炉"
             },
             {
+                label: "浸渍罐",
+                id: "浸渍罐"
+            },
+            {
                 label: "系统改造",
                 id: "系统改造"
             }
@@ -104,58 +108,45 @@ const filterData = ref([
         title: "级别",
         key: "level",
         single: true,
-        checkList: [],
-        type: 'number',
-        children: [
-            {
-                label: "P0",
-                id: 0
-            },
-            {
-                label: "P1",
-                id: 1
-            },
-            {
-                label: "P2",
-                id: 2
-            },
-            {
-                label: "P3",
-                id: 3
-            },
-            {
-                label: "P4",
-                id: 4
-            }
-        ]
+        type: 'date',
     }
 ])
 const open = () => {
 
 }
 const getData = () => {
+    // let params = {
+    //     number: "",
+    //     productNumber: "",
+    //     keyWord: keyWord.value,
+    //     productName: param.value.productName,
+    //     level: param.value.level,
+    //     pageSize: 10,
+    //     pageIndex: 1
+    // }
+    let userId = uni.getStorageSync("user").id
     let params = {
-        number: "",
-        productNumber: "",
-        customerName: customerName.value,
-        productName: param.value.productName,
-        level: param.value.level,
-        pageSize: 10,
-        pageIndex: 1
+        "creatorID": userId,
+        "updaterID": 0,
+        "startTime": 0,
+        "endTime": 0,
+        title: keyWord.value,
+        "pageSize": 9,
+        "pageIndex": 1
     }
-    $http.post("/project/get_ep_list", params).then(res => {
+    $http.post("/notice/get_notice_list", params).then(res => {
         productList.value = res.data.records
     })
 }
 // 筛选确定
 const handleConfirm = () => {
-    let keys = ['productName', 'level']
-    filterData.value.forEach(item => {
-        if (keys.includes(item.key)) {
-            let v = item.checkList
-            param.value[item.key] = item.type == 'number' ? v.join("") ? +v.join("") : 0 : v.join("")
-        }
-    })
+    // let keys = ['productName', 'level']
+    // filterData.value.forEach(item => {
+    //     if (keys.includes(item.key)) {
+    //         let v = item.checkList
+    //         param.value[item.key] = item.type == 'number' ? v.join("") ? +v.join("") : 0 : v.join("")
+    //     }
+    // })
     show.value = false
     getData()
 }
@@ -184,10 +175,12 @@ getData()
     box-sizing: border-box;
     flex: 1;
 }
+
 .pages {
     background-color: #f2f2f2;
     min-height: 100vh;
 }
+
 .search-box {
     width: calc(100vw);
     background-color: #fff;

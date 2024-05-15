@@ -17,7 +17,7 @@
 </template>
 
 <script setup>
-import { ref, reactive } from 'vue'
+import { ref, defineProps, onMounted } from 'vue'
 import * as $http from '../../request/index'
 import { onLoad } from '@dcloudio/uni-app';
 const pageIndex = ref(1)
@@ -27,19 +27,26 @@ const projectID = ref("")
 const detail = ref({})
 const userName = ref("")
 const type = ref("")
-onLoad(async (options) => {
-    projectID.value = options.id
-    type.value = options.type
-    console.log(options);
-    number.value = options.number
+
+const props = defineProps({
+    projectID: Number,
+    type: String,
+    number: String
+})
+onMounted(()=> {
+    console.log(props,'afasf');
+    type.value = props.type
+    projectID.value = props.projectID
+    number.value = props.number
     getData()
 })
 const getData = async () => {
     await getDetail()
-    let params = { "pageSize": 10, "pageIndex": pageIndex.value, "userName": userName.value, "nickName": "" }
+    let params = { "pageSize": 1000, "pageIndex": pageIndex.value, "userName": userName.value, "nickName": "" }
     const res = await $http.post("/user/get_user_list", params)
     userList.value = [...userList.value, ...res.data.records]
     let userIds = []
+    console.log(type);
     switch (type.value) {
         case "ec":
             userIds = detail.value.ecRep.split(",");
@@ -69,7 +76,7 @@ const getDetail = async () => {
         id: +projectID.value,
         number: number.value
     }
-    const res = await $http.post("/project/get_project_info", params)
+    const res = await $http.post("/project/get_ep_info", params)
     detail.value = res.data
 }
 const handleCheck = (data) => {
@@ -124,7 +131,6 @@ const removeUser = async (params, url) => {
 
 <style lang="less" scoped>
 .pages {
-    height: 100vh;
     background: #F2F2F7;
     padding: 30rpx;
     box-sizing: border-box;
@@ -143,7 +149,8 @@ const removeUser = async (params, url) => {
         display: flex;
         flex-direction: column;
         gap: 30rpx;
-
+        height: 60vh;
+        overflow: auto;
         .item {
             display: flex;
             align-items: center;

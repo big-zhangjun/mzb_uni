@@ -26,7 +26,7 @@
                             alt=""></image>
                         电气柜开始日期
                     </view>
-                    <view class="value">{{ detailData.ecStartDate || '请选择' }}</view>
+                    <view class="value">{{ detailData.ecStartDate ==  '1000-01-01' ? '请选择' :detailData.ecStartDate || '请选择' }}</view>
                 </view>
                 <view class="item" @click="handleDate('ecEndDate', detailData.ecEndDate, 'ec')">
                     <view class="label">
@@ -34,7 +34,7 @@
                             alt=""></image>
                         电气柜结束日期
                     </view>
-                    <view class="value">{{ detailData.ecEndDate || '请选择' }}</view>
+                    <view class="value">{{ detailData.ecEndDate ==  '1000-01-01' ? '请选择' :  detailData.ecEndDate  || '请选择' }}</view>
                 </view>
                 <view class="item" @click="handlePicker('ec')">
                     <view class="label">
@@ -62,7 +62,7 @@
                             alt=""></image>
                         安装开始日期
                     </view>
-                    <view class="value">{{ detailData.siStartTime || '请选择' }}</view>
+                    <view class="value">{{ detailData.siStartTime  ==  '1000-01-01' ? '请选择' :detailData.siStartTime || '请选择' }}</view>
                 </view>
                 <view class="item" @click="handleDate('siEndTime', detailData.siEndTime, 'si')">
                     <view class="label">
@@ -70,7 +70,7 @@
                             alt=""></image>
                         安装结束日期
                     </view>
-                    <view class="value">{{ detailData.siEndTime || '请选择' }}</view>
+                    <view class="value">{{ detailData.siEndTime ==  '1000-01-01' ? '请选择' :detailData.siEndTime || '请选择' }}</view>
                 </view>
                 <view class="item" @click="handlePicker('si')">
                     <view class="label">
@@ -98,7 +98,7 @@
                             alt=""></image>
                         售后开始日期
                     </view>
-                    <view class="value">{{ detailData.asStartTime || '请选择' }}</view>
+                    <view class="value">{{ detailData.asStartTime  ==  '1000-01-01' ? '请选择' :detailData.asStartTime|| '请选择' }}</view>
                 </view>
                 <view class="item" @click="handleDate('asEndTime', detailData.asEndTime, 'as')">
                     <view class="label">
@@ -106,7 +106,7 @@
                             alt=""></image>
                         售后结束日期
                     </view>
-                    <view class="value">{{ detailData.asEndTime || '请选择' }}</view>
+                    <view class="value">{{ detailData.asEndTime ==  '1000-01-01' ? '请选择' :detailData.asEndTime || '请选择' }}</view>
                 </view>
                 <view class="item" @click="handlePicker('as')">
                     <view class="label">
@@ -122,10 +122,16 @@
             @confirm="handleChangeEpStatus" keyName="label" @cancel="rpStatus = false"></up-picker>
         <up-calendar :show="dateStatus" :defaultDate="defaultDate" @close="dateStatus = false"
             @confirm="handleDateConfirm"></up-calendar>
+        <up-popup :show="userModel" @close="handleClose" @open="open">
+            <view>
+                <checkUser v-if="userModel" :projectID="projectId" :number="number" :type="cType"/>
+            </view>
+        </up-popup>
     </view>
 </template>
 <script setup>
 import { ref, defineProps, defineEmits, onMounted } from 'vue';
+import checkUser from '../checkUser.vue';
 import * as $http from '../../../request/index'
 const emit = defineEmits(['updateDetail'])
 const open = () => {
@@ -137,6 +143,10 @@ const props = defineProps({
     userList: Array,
     detailData: Object
 })
+const projectId = ref(0)
+const number = ref('')
+const cType = ref('')
+const userModel = ref(false)
 const defaultIndex = ref([0])
 const columns = ref([
     [
@@ -162,9 +172,14 @@ const dateType = ref("")
 const defaultDate = ref(Date.now())
 const dateStatus = ref(false)
 const chooseManage = (type) => {
-    uni.navigateTo({
-        url: `/pages/Detail/checkUser?id=${props.detailData.id}&numbr=${props.detailData.number}&type=${type}`
-    })
+    projectId.value = props.detailData.id
+    number.value = props.detailData.number
+    cType.value = type
+    statusType.value = type
+    // uni.navigateTo({
+    //     url: `/pages/Detail/checkUser?id=${props.detailData.id}&numbr=${props.detailData.number}&type=${type}`
+    // })
+    userModel.value  = true
 }
 const ecParams = ref({
     "startDate": "",
@@ -204,6 +219,12 @@ onMounted(() => {
         "statusCN": getEsStatus(props.detailData.siStatus)
     }
 })
+const handleClose = () => {
+    userModel.value=false
+    console.log('ssaaaaaa');
+    updateDetail()
+}
+
 const handlePicker = (type) => {
     statusType.value = type
     let status = ""

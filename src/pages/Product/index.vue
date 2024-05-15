@@ -43,7 +43,7 @@
 <script setup>
 import { ref } from 'vue'
 import filter from "../../components/Filter.vue";
-import { onShow } from '@dcloudio/uni-app';
+import { onReachBottom, onShow } from '@dcloudio/uni-app';
 import * as $http from '../../request/index'
 const list = ref([])
 const customerName = ref("")
@@ -77,6 +77,10 @@ const filterData = ref([
                 id: "固化炉"
             },
             {
+                label: "浸渍罐",
+                id: "浸渍罐"
+            },
+            {
                 label: "系统改造",
                 id: "系统改造"
             }
@@ -89,10 +93,6 @@ const filterData = ref([
         checkList: [],
         type: 'number',
         children: [
-            {
-                label: "P0",
-                id: 0
-            },
             {
                 label: "P1",
                 id: 1
@@ -139,6 +139,13 @@ const close = () => {
 const open = () => {
 
 }
+const totalPage = ref(1)
+onReachBottom(() => {
+    if (pageIndex.value >= totalPage.value) return
+    pageIndex.value++
+    getData()
+})
+const pageIndex=ref(1)
 const handleAdd = () => {
     uni.navigateTo({
         url: "/pages/Product/productForm?type=add"
@@ -160,10 +167,11 @@ const getData = () => {
         productName: param.value.productName,
         level: param.value.level,
         pageSize: 10,
-        pageIndex: 1
+        pageIndex: pageIndex.value
     }
     $http.post("/project/get_project_list", params).then(res => {
-        list.value = res.data.records
+        list.value = [...list.value,...res.data.records]
+        totalPage.value = res.data.totalPage
     })
 }
 // 获取颜色class

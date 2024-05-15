@@ -177,9 +177,9 @@
         </view>
         <view class="delete" @click="handleDelete">删除</view>
     </view>
-    <view class="edit" @click="handleEdit">
+    <!-- <view class="edit" @click="handleEdit">
         <image class="img" mode="aspectFill" src="../../static/images/edit.png" alt=""></image>
-    </view>
+    </view> -->
     <up-modal :show="show" @confirm="confirm" @cancel="show = false" showCancelButton title="提示"
         content='确认删除该条数据？'></up-modal>
 </template>

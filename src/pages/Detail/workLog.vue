@@ -42,7 +42,7 @@
         <view class="flowForm">
             <view class="flowForm-header">
                 <view class="cancle" @click="show = false">取消</view>
-                <view class="title">用户信息</view>
+                <view class="title">项目信息</view>
                 <view class="confirm" @click="handleProjectConfirm">确定</view>
             </view>
             <view class="content">
@@ -81,6 +81,8 @@ const formData = ref({
     projectName: "",
     blogDay: Date.now()
 })
+const latitude = ref(0)
+const longitude = ref(0)
 const blogList = ref([])
 const projectName = ref("")
 const projectList = ref([])
@@ -136,10 +138,7 @@ getBlogList()
 const getPosoition = () => {
     uni.getLocation({
         type: 'wgs84', // 获取经纬度坐标信息
-        success: function (res) {
-            var latitude = res.latitude; // 纬度
-            var longitude = res.longitude; // 经度
-
+        success: function () {
             // 调用微信小程序的wx.chooseLocation方法，获取位置详细信息
             uni.chooseLocation({
                 success: function (locationRes) {
@@ -151,6 +150,8 @@ const getPosoition = () => {
                     var street = locationRes.street; // 街道
                     formData.value.address = addresss + name
                     // 在这里可以根据需要对获取到的位置信息进行处理
+                    latitude.value = locationRes.latitude
+                    longitude.value = locationRes.longitude
                     console.log(locationRes);
                     console.log('详细地址：' + address);
                     console.log('省份：' + province);
@@ -185,9 +186,9 @@ const formatDate = (timestamp) => {
 
 const submit = async () => {
     const { projectName, address, remark, content, blogDay } = formData.value
-    if(!projectName || !address || !remark || !content || !blogDay ) {
+    if (!projectName || !address || !remark || !content || !blogDay) {
         uni.showToast({
-            title:"请检查必填信息",
+            title: "请检查必填信息",
             icon: "none"
         })
         return
@@ -198,17 +199,49 @@ const submit = async () => {
         blogDay: formatDate(blogDay),
         projectID: projectData.id,
         address,
+        longitude: longitude.value,
+        latitude: latitude.value,
         content: content.join(","),
         remark
     }
-    console.log(type.value);
     if (type.value == 'add') {
         addWork(params)
     } else {
         editWork(params)
     }
 
-
+    let addFun = blogList.value.filter(item => content.includes(item.content)).map(item => item.contentType)
+    addFun = [...new Set(addFun)]
+    addFun.forEach(async item => {
+        await addUser(item, projectData.id)
+    })
+}
+const addUser = async (type, id) => {
+    let url = ""
+    switch (type) {
+        case 1:
+            url = '/project/add_ec_rep'
+            break
+        case 2:
+            url = '/project/add_si_rep'
+            break
+        case 3:
+            url = '/project/add_as_rep'
+            break
+    }
+    const user = uni.getStorageSync('user')
+    let params = {
+        id,
+        "rep": user.id,
+        "repName": user.userName
+    }
+    const res = await $http.post(url, params)
+    if (res.status.retCode === 0) {
+        uni.showToast({
+            title: "操作成功",
+            icon: 'none'
+        })
+    }
 }
 const addWork = async (params) => {
     const res = await $http.post("/blog/add_blog_info", params)

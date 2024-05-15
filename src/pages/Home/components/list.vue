@@ -1,28 +1,18 @@
 <template>
     <view class="page">
         <view class="title">
-            <div class="label">电气项目计划表</div>
+            <div class="label">公告列表</div>
             <div class="num"><text>{{ productList.length }}</text> 条</div>
         </view>
         <view class="list">
             <view class="item" v-if="productList.length" v-for="item in productList" :key="item.id"
                 @click="goDetail(item)">
                 <view class="header">
-                    <text class="title">{{ item.customerName }}</text>
-                    <view class="tag">
-                        <view class="productName">{{ item.productName }}</view>
-                        <view class="exigency" :class="getColor(item.level)">P{{ item.level }}</view>
-                        <!-- <view class="orange">进行中</view> -->
+                    <view class="text">
+                        <text class="title">{{ item.title }}</text>
+                        <text class="date">创建时间：{{ item.createTime }}</text>
                     </view>
-                </view>
-                <view class="content">
-                    <view class="content_item">电气柜安装状态：<text class="red">{{ getEpStatus(item.ecStatus) }}</text></view>
-                    <view class="content_item">现场安装情况：<text class="red">未开始</text></view>
-                    <view class="content_item">售后状态：<text class="red">未开始</text></view>
-                </view>
-                <view class="footer">
-                    <view class="idNo">项目编号：{{ item.number }}</view>
-                    <view class="idNo">产品编号：{{ item.productNumber }}</view>
+                    <image class="cover" width="160" height="160" mode="aspectFill" :src="getImg(item)" alt=""></image>
                 </view>
             </view>
             <view v-show="!productList.length" style="margin: 200rpx 0; ">
@@ -39,7 +29,7 @@ const props = defineProps({
 })
 const goDetail = (data) => {
     uni.navigateTo({
-        url: `/pages/Detail/index?id=${data.id}&number=${data.number}`
+        url: `/pages/Notice/index?id=${data.id}`
     })
 }
 // 获取颜色class
@@ -66,10 +56,27 @@ const getEpStatus = (v) => {
             id: 4
         }
     ]
-    let res = dict.find(item=> item.id == v)
-    if(res) {
+    let res = dict.find(item => item.id == v)
+    if (res) {
         return res.label
-    } 
+    }
+}
+const getImg = (data) => {
+    if (!data.cover) {
+        let randomNum = Math.floor(Math.random() * 5) + 1;
+        let imgs = [
+            "1.jpg",
+            "2.jpg",
+            "3.jpg",
+            "4.png",
+            "5.png"
+        ]
+        return `../../../static/images/${imgs[randomNum - 1]}`
+    } else if (data.cover.includes("custom")) {
+        return `../../../static/images/${data.cover.split("/")[1]}`
+    } else {
+        return 'http://192.168.2.48:8012' + data.cover.replace(/^\./, '')
+    }
 }
 </script>
 
@@ -119,12 +126,18 @@ const getEpStatus = (v) => {
         .header {
             display: flex;
             justify-content: space-between;
-
-            text {
+            .cover {
+                width: 200rpx;
+                height: 140rpx;
+                object-fit: scale-down;
+                border-radius: 12rpx;
+            }
+            .title {
                 font-size: 32rpx;
                 color: #12151b;
+                display: block;
                 font-weight: bold;
-                max-width: 440rpx;
+                max-width: 400rpx;
                 overflow: hidden;
                 text-overflow: ellipsis;
                 text-align: left;
@@ -133,6 +146,12 @@ const getEpStatus = (v) => {
                 white-space: nowrap;
             }
 
+            .date {
+                display: block;
+                font-size: 22rpx;
+                margin-top: 20rpx;
+                color: #999999;
+            }
             .tag {
                 display: flex;
                 align-items: center;
