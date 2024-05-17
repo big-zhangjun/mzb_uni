@@ -193,6 +193,10 @@ const submit = async () => {
         })
         return
     }
+    let res = await $http.post("/blog/check_blog_exist", {userID: uni.getStorageSync("user").id, blogDay: formatDate(blogDay)})
+    if(res.data.data) {
+        uni.showToast("该日以创建过日志了，将会覆盖掉上次日志")
+    }
     let projectData = projectList.value.find(item => item.label == projectName)
     let params = {
         userID: uni.getStorageSync("user").id,

@@ -11,13 +11,19 @@
                 <view class="icon">
                     <image class="img" mode="aspectFill" src="../../../static/menu/report.png" alt=""></image>
                 </view>
-                <text class="txt">电气项目计划</text>
+                <text class="txt">电气计划</text>
             </view>
             <view class="menu-item" @click="addWorkLog">
                 <view class="icon">
                     <image class="img" mode="aspectFill" src="../../../static/menu/order.png" alt=""></image>
                 </view>
                 <text class="txt">创建日志</text>
+            </view>
+            <view class="menu-item" @click="goStatistics">
+                <view class="icon">
+                    <image class="img" mode="aspectFill" src="../../../static/menu/order.png" alt=""></image>
+                </view>
+                <text class="txt">出差分布</text>
             </view>
         </view>
     </view>
@@ -41,6 +47,11 @@ const addWorkLog = () => {
         url: `/pages/Detail/workLog?type=add`
     })
 }
+const goStatistics = () => {
+    uni.navigateTo({
+        url: `/pages/Statistics/index`
+    })
+}
 </script>
 
 <style lang="less" scoped>
@@ -56,7 +67,7 @@ const addWorkLog = () => {
     border-radius: 20rpx;
     margin: 0 auto;
     box-sizing: border-box;
-    padding: 60rpx 100rpx;
+    padding: 60rpx 32rpx;
     display: flex;
     justify-content: space-between;
 

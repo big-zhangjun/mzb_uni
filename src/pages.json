@@ -79,7 +79,8 @@
 		{
 			"path": "pages/Statistics/index",
 			"style": {
-				"navigationBarTitleText": "出差分布"
+				"navigationBarTitleText": "出差分布",
+				"pageOrientation": "landscape"
 			}
 		}
 	],
@@ -103,6 +104,9 @@
 			]
 		}
 	],
+	"usingComponents": {
+	    "ec-canvas": "../../components/ec-canvas/ec-canvas"
+	},
 	"easycom": {
 		"custom": {
 			"^u--(.*)": "uview-plus/components/u-$1/u-$1.vue",

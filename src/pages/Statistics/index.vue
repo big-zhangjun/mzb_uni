@@ -1,42 +1,162 @@
 <template>
-    <view>
-      <ECharts :options="chartOptions" :style="{ width: '100%', height: '400px' }" />
-    </view>
-  </template>
-  
-  <script>
-  import { ref } from 'vue';
-  import ECharts from './components/china.vue';
-  
-  export default {
-    components: {
-      ECharts
+  <view class="chat">
+    <view style="width:750rpx; height:100%"><l-echart ref="chartRef"></l-echart></view>
+  </view>
+</template>
+<script setup>
+// 插件内的 二选一 
+import * as echarts from 'echarts'
+import { ref, onMounted } from 'vue'
+import chinaMapData from './components/china.json'; // 修改路径为你的实际路径
+const chartRef = ref(null)
+const employeeData = [
+  {
+    "id": 221,
+    "userName": "张俊",
+    "nickName": "张俊",
+    "deptName": "电控部",
+    "avatar": "./pic/avatar/20240510165740.png",
+    "longitude": 121.44297,
+    "latitude": 28.67307,
+    "blogDay": "2024-05-13T00:00:00+08:00"
+  },
+  {
+    userName: '李四',
+    longitude: 118.426143,
+    latitude: 31.19967
+  }
+]
+const option = {
+  title: {
+    text: '',
+    left: 'center'
+  },
+  tooltip: {
+    trigger: 'item', // 触发类型，默认数据触发，可选为：'item'、'axis'  
+    formatter: function (params) {
+      // params 是一个包含当前数据点信息的数组  
+      // 通常包含 seriesName（系列名称）、data（数据值）、dataIndex（数据索引）等信息  
+
+      // 自定义提示框的内容  
+      var htmlContent = '<div class="custom-tooltip">';
+      htmlContent += '<div class="round">姓名: ' + params.name + '</div>';
+      // htmlContent += '<div class="round">日期: ' + that.convertISOToDateString(params.value[2]) + '</div>';
+      htmlContent += '<div class="round">地址: ' + params.value[3] + '</div>';
+      // 如果你的数据项还有其他属性，也可以在这里展示  
+      // 例如：htmlContent += '<p>其他信息: ' + params[0].data.otherInfo + '</p>';  
+
+      // 如果你的图表有多个数据系列并且你想要展示所有系列的信息  
+      // 你可以遍历 params 数组来构建内容  
+      // params.forEach(function (param) {  
+      //     htmlContent += '<p>' + param.seriesName + ': ' + param.value + '</p>';  
+      // });  
+
+      htmlContent += '</div>';
+
+      // 返回自定义的 HTML 内容  
+      return htmlContent;
     },
-    setup() {
-      const chartOptions = ref({
-        title: {
-          text: 'ECharts 入门示例'
+  },
+  geo: {
+    show: true,
+    map: 'china',
+    roam: true, // 是否开启鼠标缩放移动和平移漫游
+    aspectScale: 0.75, //参数用于 scale 地图的长宽比。
+    // layoutCenter: ['50%', '51.5%'], //地图位置
+    // layoutSize: '110%', //地图的大小
+    label: {
+      show: false,
+      color: '#fff',
+    },
+    itemStyle: {
+      normal: {
+        borderColor: 'rgba(147, 235, 248, 1)',
+        borderWidth: 1,
+        areaColor: {
+          type: 'radial',
+          x: 0.5,
+          y: 0.5,
+          r: 0.8,
+          colorStops: [{
+            offset: 0,
+            color: 'rgba(147, 235, 248, 0)' // 0% 处的颜色
+          }, {
+            offset: 1,
+            color: 'rgba(147, 235, 248, .2)' // 100% 处的颜色
+          }],
+          globalCoord: false // 缺省为 false
         },
-        tooltip: {},
-        xAxis: {
-          data: ['衬衫', '羊毛衫', '雪纺衫', '裤子', '高跟鞋', '袜子']
-        },
-        yAxis: {},
-        series: [{
-          name: '销量',
-          type: 'bar',
-          data: [5, 20, 36, 10, 10, 20]
-        }]
-      });
-  
-      return {
-        chartOptions
-      };
+        shadowColor: 'rgba(128, 217, 248, 1)',
+        // shadowColor: 'rgba(255, 255, 255, 1)',
+        shadowOffsetX: -2,
+        shadowOffsetY: 2,
+        shadowBlur: 10
+      },
+      emphasis: {
+        areaColor: '#389BB7',
+        borderWidth: 0
+      }
     }
-  };
-  </script>
-  
-  <style scoped>
-  /* 可以根据需要添加样式 */
-  </style>
-  
+  },
+  series: [
+    {
+      name: '员工分布',
+      type: 'scatter', // 图表类型为散点图  
+      coordinateSystem: 'geo', // 使用地理坐标系  
+      data: employeeData.map(function (item) { // 假设employeeData是一个包含经纬度和员工信息的数组  
+        return {
+          name: item.userName, // 员工姓名，用于tooltip显示  
+          value: [item.longitude, item.latitude, item.blogDay, item.address], // 经纬度坐标  
+          label: { // 散点标签  
+            show: true,
+            textStyle: { // 文本样式设置  
+              color: "#fff", // 设置为金色  
+              borderColor: 'transparent', // 取消描边，设置为透明  
+              borderWidth: 0 // 边框宽度设置为0，进一步确保没有描边  
+            },
+            formatter: '{b}' // 显示员工姓名  
+          },
+        };
+      }),
+      symbolSize: function (val) { // 散点大小  
+        return val[2] / 10; // 假设每个员工数据还有一个表示大小的字段，这里简化为直接返回固定值  
+      },
+      label: {
+        formatter: '{b}' // 标签内容格式，这里显示员工姓名  
+      },
+      emphasis: { // 高亮状态  
+        label: {
+          show: true
+        }
+      },
+      itemStyle: {
+        color: "#fff" // 散点颜色  
+      },
+      zlevel: 1 // 控制图形的前后顺序  
+    }
+  ]
+};
+
+onMounted(() => {
+  // 组件能被调用必须是组件的节点已经被渲染到页面上
+  setTimeout(async () => {
+    if (!chartRef.value) return
+    echarts.registerMap('china', chinaMapData);
+    const myChart = await chartRef.value.init(echarts)
+    myChart.setOption(option)
+  }, 300)
+})
+</script>
+<style>
+.chat {
+  width: 100%;
+  background-color: #000;
+  height: 100vh;
+  overflow: hidden;
+}
+.uni-ec-canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+</style>
