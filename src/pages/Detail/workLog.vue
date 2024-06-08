@@ -2,7 +2,7 @@
     <view class="work-log">
         <view class="item">
             <view class="label required">1.请选择日期：</view>
-            <view class="value" :class="{ actove: open }" @click="open = true"><text>{{ formatDate(formData.blogDay) ||
+            <view class="value" :class="{ actove: open }" @click="open = true"><text>{{ formatDate(formData.blogDate) ||
                 '请选择日期'
                     }}</text><up-icon :name="open ? 'arrow-up-fill' : 'arrow-down-fill'"
                     color="rgba(8, 14, 23, 0.4)"></up-icon></view>
@@ -35,7 +35,7 @@
             <up-textarea v-model="formData.remark" height="206rpx" placeholder="请输入内容"></up-textarea>
         </view>
         <view class="btn" @click="submit">提交</view>
-        <up-datetime-picker hasInput :show="open" mode="date" :formatter="formatter" v-model="formData.blogDay"
+        <up-datetime-picker hasInput :show="open" mode="date" :formatter="formatter" v-model="formData.blogDate"
             @cancel="handleCancel" @confirm="handleConfirm"></up-datetime-picker>
     </view>
     <up-popup :show="show" mode="bottom" @close="show = false" @open="open" :round="30">
@@ -79,7 +79,7 @@ const formData = ref({
     content: "",
     address: "",
     projectName: "",
-    blogDay: Date.now()
+    blogDate: Date.now()
 })
 const latitude = ref(0)
 const longitude = ref(0)
@@ -185,22 +185,22 @@ const formatDate = (timestamp) => {
 }
 
 const submit = async () => {
-    const { projectName, address, remark, content, blogDay } = formData.value
-    if (!projectName || !address || !remark || !content || !blogDay) {
+    const { projectName, address, remark, content, blogDate } = formData.value
+    if (!projectName || !address || !remark || !content || !blogDate) {
         uni.showToast({
             title: "请检查必填信息",
             icon: "none"
         })
         return
     }
-    let res = await $http.post("/blog/check_blog_exist", {userID: uni.getStorageSync("user").id, blogDay: formatDate(blogDay)})
+    let res = await $http.post("/blog/check_blog_exist", {userID: uni.getStorageSync("user").id, blogDate: formatDate(blogDate)})
     if(res.data.data) {
         uni.showToast("该日以创建过日志了，将会覆盖掉上次日志")
     }
     let projectData = projectList.value.find(item => item.label == projectName)
     let params = {
         userID: uni.getStorageSync("user").id,
-        blogDay: formatDate(blogDay),
+        blogDate: formatDate(blogDate),
         projectID: projectData.id,
         address,
         longitude: longitude.value,

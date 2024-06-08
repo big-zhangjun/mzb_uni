@@ -81,7 +81,7 @@
                     <view class="value">{{ getEsStatus(detailData.siStatus) }}</view>
                 </view>
             </up-collapse-item>
-            <up-collapse-item title="售后" name="Numerous tools">
+            <!-- <up-collapse-item title="售后" name="Numerous tools">
                 <view class="item" @click="chooseManage('as')">
                     <view class="label">
                         <image class="icon" width="10" height="10" mode="aspectFit" src="../../static/images/menage.svg"
@@ -116,7 +116,7 @@
                     </view>
                     <view class="value">{{ getEsStatus(detailData.asStatus) }}</view>
                 </view>
-            </up-collapse-item>
+            </up-collapse-item> -->
         </up-collapse>
         <up-picker :defaultIndex="defaultIndex" :show="rpStatus" ref="uPickerRef" :columns="columns"
             @confirm="handleChangeEpStatus" keyName="label" @cancel="rpStatus = false"></up-picker>

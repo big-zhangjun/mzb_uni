@@ -7,9 +7,21 @@
 			}
 		},
 		{
+			"path": "pages/Chart/index",
+			"style": {
+				"navigationBarTitleText": "统计"
+			}
+		},
+		{
 			"path": "pages/Detail/index",
 			"style": {
 				"navigationBarTitleText": "电气项目详情"
+			}
+		},
+		{
+			"path": "pages/Binding/index",
+			"style": {
+				"navigationBarTitleText": "绑定账号"
 			}
 		},
 		{
@@ -127,12 +139,19 @@
 				"iconPath": "static/tabbar/home.png",
 				"selectedIconPath": "static/tabbar/home_active.png"
 			},
+			// {
+			// 	"pagePath": "pages/Chart/index",
+			// 	"text": "统计",
+			// 	"iconPath": "static/tabbar/mine.png",
+			// 	"selectedIconPath": "static/tabbar/mine_active.png"
+			// },
 			{
 				"pagePath": "pages/Mine/index",
 				"text": "我的",
 				"iconPath": "static/tabbar/mine.png",
 				"selectedIconPath": "static/tabbar/mine_active.png"
 			}
+			
 		]
 	},
 	"globalStyle": {

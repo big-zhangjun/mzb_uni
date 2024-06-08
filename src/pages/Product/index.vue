@@ -31,7 +31,7 @@
         <u-empty mode="data" v-else>
         </u-empty>
     </view>
-    <view class="add" @click="handleAdd">
+    <view class="add" @click="handleAdd" v-if="authority.includes(1)">
         <image class="img" mode="aspectFill" src="../../static/images/add.png" alt=""></image>
     </view>
     <!-- 弹出层 -->
@@ -52,6 +52,7 @@ const param = ref({
     level: 0,
     productName: ''
 })
+const authority = ref([])
 const filterData = ref([
     {
         title: "产品名称",
@@ -157,6 +158,7 @@ const goDetail = (data) => {
     })
 }
 onShow(() => {
+    authority.value = uni.getStorageSync("authority").filter(item=> item.moduleID == 16).map(item=> item.operateID);
     getData()
 })
 const getData = () => {

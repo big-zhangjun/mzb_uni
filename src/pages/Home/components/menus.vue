@@ -1,7 +1,7 @@
 <template>
     <view class="pages">
         <view class="card">
-            <view class="menu-item"  @click="goPoduct">
+            <view class="menu-item" @click="goPoduct">
                 <view class="icon">
                     <image class="img" mode="aspectFill" src="../../../static/menu/client.png" alt=""></image>
                 </view>
@@ -43,9 +43,21 @@ const goElectrical = () => {
     })
 }
 const addWorkLog = () => {
-    uni.navigateTo({
-        url: `/pages/Detail/workLog?type=add`
-    })
+    wx.requestSubscribeMessage({
+        tmplIds: ['u8RuqCb4KsxNnPOrTaFkidLPJhmv-h4A4JvVVz2zIkc'], // 替换为你的消息模板ID
+        success(res) {
+            if (res['u8RuqCb4KsxNnPOrTaFkidLPJhmv-h4A4JvVVz2zIkc'] === 'accept') {
+                // 用户同意订阅消息，可以进行后续处理
+                console.log('订阅成功');
+                uni.navigateTo({
+                    url: `/pages/Detail/workLog?type=add`
+                })
+            }
+        },
+        fail(err) {
+            console.error('订阅消息失败', err);
+        }
+    });
 }
 const goStatistics = () => {
     uni.navigateTo({

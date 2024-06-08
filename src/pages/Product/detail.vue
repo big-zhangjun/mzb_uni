@@ -175,7 +175,7 @@
                 <view class="value">{{ detail.airCooledValve || '--' }}</view>
             </view>
         </view>
-        <view class="delete" @click="handleDelete">删除</view>
+        <view class="delete" v-if="authority.includes(2)" @click="handleDelete">删除</view>
     </view>
     <!-- <view class="edit" @click="handleEdit">
         <image class="img" mode="aspectFill" src="../../static/images/edit.png" alt=""></image>
@@ -193,6 +193,8 @@ const handleEdit = () => {
         url: `/pages/Product/productForm?type=edit&id=${data.value}&number=${detail.value.number}`
     })
 }
+const authority = ref([])
+
 let data = ref("")
 let number = ref("")
 const getStatus = (v) => {
@@ -228,6 +230,7 @@ onLoad((options) => {
     const { id, number } = options
     data.value = +id
     number.value = number
+
 })
 const getData = (id, number) => {
     let params = {
@@ -240,6 +243,7 @@ const getData = (id, number) => {
 
 }
 onShow(()=> {
+    authority.value = uni.getStorageSync("authority").filter(item=> item.moduleID == 16).map(item=> item.operateID);
     getData(+data.value , number.value)
 
 })

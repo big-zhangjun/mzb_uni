@@ -114,6 +114,13 @@ const filterData = ref([
 const open = () => {
 
 }
+const getAuthority = async () => {
+    let roleId = uni.getStorageSync("user").roleID
+    let res = await $http.post("/auth/get_authority_operate", {roleId})
+    uni.setStorageSync("authority", res.data)
+    console.log(res,'ssf');
+}
+getAuthority()
 const getData = () => {
     // let params = {
     //     number: "",
@@ -124,12 +131,12 @@ const getData = () => {
     //     pageSize: 10,
     //     pageIndex: 1
     // }
-    let userId = uni.getStorageSync("user").id
+    // let userId = uni.getStorageSync("user").id
     let params = {
-        "creatorID": userId,
+        // "creatorID": userId,
         "updaterID": 0,
-        "startTime": 0,
-        "endTime": 0,
+        "startDate": '',
+        "endDate": '',
         title: keyWord.value,
         "pageSize": 9,
         "pageIndex": 1

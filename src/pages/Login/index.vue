@@ -2,14 +2,18 @@
   <view class="login">
     <image class="logo" width="160" height="160" mode="aspectFill" src="../../static/images/logo.jpg" alt=""></image>
     <h1 class="title">账号登录</h1>
-    <input class="phone" v-model="phone"  placeholder="请输入账号">
+    <input class="phone" v-model="phone" placeholder="请输入账号">
     <input class="password" v-model="password" type='password' placeholder="请输入密码">
     <view class="btn" @click="handleLogin">
       <span>登录</span>
     </view>
     <u-toast ref="uToastRef"></u-toast>
     <view class="more">
-      <view>忘记密码</view>
+      <!-- <view>忘记密码</view> -->
+      <button open-type="getUserInfo" class="wxlogin" @getuserinfo="onGetUserInfo">
+        <image class="wxicon" width="80" height="80" mode="aspectFill" src="../../static/images/weixin_mw.svg" alt="">
+        </image>
+      </button>
       <!-- <span>注册</span> -->
     </view>
   </view>
@@ -33,6 +37,41 @@ function getMD5Up(val) {
   let screct = md5(val)
   let bigScrect = screct.toUpperCase()
   return bigScrect
+}
+const onGetUserInfo = (v) => {
+  uni.showLoading({
+    title: '加载中...',
+    mask: true
+  });
+  login(v)
+}
+const login = () => {
+  uni.login({
+    provider: 'weixin',
+    success: (loginRes) => {
+      $http.post("/bridge/code2Session", { jsCode: loginRes.code }).then(res => {
+        if (res.data.id === 0) {
+          uni.navigateTo({
+            url: `/pages/Binding/index?openId=${res.data.openid}`
+          })
+        } else {
+          uni.setStorageSync("user", res.data)
+          uToastRef.value.show({
+            type: 'default',
+            message: "登录成功", complete() {
+              uni.switchTab({
+                url: "/pages/Home/index"
+              });
+            }
+          });
+          uni.hideLoading();
+        }
+      })
+    },
+    fail: (err) => {
+      console.error('微信登录失败', err);
+    }
+  });
 }
 // 点击登录
 const handleLogin = () => {
@@ -65,9 +104,9 @@ const handleLogin = () => {
         });
       }
     });
-  }).catch(err=>{
+  }).catch(err => {
     loading.value = false
-    const {msg} = err.status
+    const { msg } = err.status
     uToastRef.value.show({
       type: 'default',
       message: msg
@@ -159,5 +198,24 @@ const handleLogin = () => {
     font-size: 28rpx;
     margin-top: 30rpx;
   }
+}
+
+.wxlogin {
+  border-color: red;
+  background-color: #fff;
+  outline: none;
+  position: fixed;
+  bottom: 120rpx;
+  left: 50%;
+  transform: translateX(-50%);
+
+  .wxicon {
+    width: 80rpx;
+    height: 80rpx;
+  }
+}
+
+button::after {
+  border: none;
 }
 </style>

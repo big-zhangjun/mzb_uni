@@ -5,7 +5,7 @@
             请输入旧密码
         </view>
         <input class="old" type='password' v-model="password" placeholder="请输入旧密码">
-        <input class="new" type='password' v-model="userNumber" placeholder="请输入新密码">
+        <input class="new" type='password' v-model="realName" placeholder="请输入新密码">
         <view class="btn" @click="handleConfirm">确认</view>
     </view>
 </template>
@@ -14,7 +14,7 @@
 import { ref } from 'vue'
 import md5 from "js-md5";
 import * as $http from '../../../request/index'
-const userNumber = ref("")
+const realName = ref("")
 const password = ref("")
 function getMD5Up(val) {
     let screct = md5(val)
@@ -23,13 +23,13 @@ function getMD5Up(val) {
 }
 const handleConfirm = async () => {
     let id = uni.getStorageSync('user').id
-    if(!userNumber.value || !password.value) {
+    if(!realName.value || !password.value) {
         uni.$u.toast('请输入密码')
         return
     }
     let params = {
         id,
-        userNumber: getMD5Up(userNumber.value),
+        realName: getMD5Up(realName.value),
         password: getMD5Up(password.value),
     }
     try {

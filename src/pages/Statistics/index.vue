@@ -9,23 +9,7 @@ import * as echarts from 'echarts'
 import { ref, onMounted } from 'vue'
 import chinaMapData from './components/china.json'; // 修改路径为你的实际路径
 const chartRef = ref(null)
-const employeeData = [
-  {
-    "id": 221,
-    "userName": "张俊",
-    "nickName": "张俊",
-    "deptName": "电控部",
-    "avatar": "./pic/avatar/20240510165740.png",
-    "longitude": 121.44297,
-    "latitude": 28.67307,
-    "blogDay": "2024-05-13T00:00:00+08:00"
-  },
-  {
-    userName: '李四',
-    longitude: 118.426143,
-    latitude: 31.19967
-  }
-]
+const employeeData = ref([])
 const option = {
   title: {
     text: '',
@@ -103,7 +87,7 @@ const option = {
       name: '员工分布',
       type: 'scatter', // 图表类型为散点图  
       coordinateSystem: 'geo', // 使用地理坐标系  
-      data: employeeData.map(function (item) { // 假设employeeData是一个包含经纬度和员工信息的数组  
+      data: employeeData.value.map(function (item) { // 假设employeeData是一个包含经纬度和员工信息的数组  
         return {
           name: item.userName, // 员工姓名，用于tooltip显示  
           value: [item.longitude, item.latitude, item.blogDay, item.address], // 经纬度坐标  

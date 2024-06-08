@@ -75,7 +75,7 @@
             <view class="card" v-for="item in blogList" :key="item.id" @click="editWork(item)">
                 <view class="work-header">
                     <view class="title">{{ item.customerName }}</view>
-                    <view class="level">{{ formatDate(item.blogDay, 1) }}</view>
+                    <view class="level">{{ formatDate(item.blogDate, 1) }}</view>
                 </view>
                 <view class="work-content">
                     <view class="size">内容：</view>
@@ -156,7 +156,7 @@ function click(item) {
 }
 // 处理日期格式
 const formatDate = (timestamp, flag) => {
-    const date = flag ? new Date(timestamp) : new Date(timestamp * 1000); // 注意时间戳要乘以1000，因为JavaScript中的时间戳是以毫秒为单位的
+    const date = flag ? new Date(timestamp) : new Date(timestamp); // 注意时间戳要乘以1000，因为JavaScript中的时间戳是以毫秒为单位的
     const year = date.getFullYear();
     const month = date.getMonth() + 1; // 月份从0开始，所以需要加1
     const day = date.getDate();
