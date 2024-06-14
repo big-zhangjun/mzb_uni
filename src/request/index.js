@@ -1,16 +1,22 @@
 import md5 from "js-md5";
 // const config_url = "http://3260n2b816.wicp.vip:31719";
-const  config_url= "http://192.168.2.48:8012";
-let user = uni.getStorageSync("user")
+const config_url = "http://192.168.2.48:8012";
+let user = uni.getStorageSync("user");
 let id = "2-0";
-let ts = Date.now()
-let sig = md5(`2-0testkey${ts}`)
+let ts = Date.now();
+let sig = md5(`2-0testkey${ts}`);
+
 const request = (url, data = {}, method = 'GET') => {
 	return new Promise((resolve, reject) => {
-		if(user) {
-			sig = md5('2-'+user.id +'testkey'+ ts)
-			id = `2-${user.id}`
+		if (user) {
+			sig = md5('2-' + user.id + 'testkey' + ts);
+			id = `2-${user.id}`;
 		}
+
+		uni.showLoading({
+			title: '加载中...'
+		});
+
 		uni.request({
 			url: config_url + url,
 			data: data,
@@ -25,18 +31,19 @@ const request = (url, data = {}, method = 'GET') => {
 			},
 			dataType: 'json',
 			success: (res) => {
+				uni.hideLoading();
 				const responseData = interceptor(res.data);
-				if (responseData.status.code === 'ok' || responseData.status.
-					retcode === 0 || responseData.status.retCode === 0) {
+				if (responseData.status.code === 'ok' || responseData.status.retcode === 0 || responseData.status.retCode === 0) {
 					resolve(responseData);
 				} else {
 					reject(responseData);
 				}
 			},
-			fail: function (err) {
-				reject(err)
+			fail: (err) => {
+				uni.hideLoading();
+				reject(err);
 			}
-		})
+		});
 	});
 };
 
@@ -49,6 +56,7 @@ const get = (url, data) => {
 const post = (url, data) => {
 	return request(url, data, 'POST');
 };
+
 // PUT 请求封装
 const put = (url, data) => {
 	return request(url, data, 'PUT');
@@ -61,8 +69,7 @@ const del = (url, data) => {
 
 // 请求拦截
 function interceptor(response) {
-
-	if ( response.status.retcode == 1001) {
+	if (response.status.retcode == 1001) {
 		uni.showToast({
 			title: '登录过期，请重新登录',
 			icon: 'none',
@@ -83,7 +90,7 @@ function throwErr(res) {
 	if (res.code == 500) {
 		uni.showToast({
 			title: res.msg,
-		})
+		});
 	}
 }
 
@@ -92,4 +99,4 @@ export {
 	post,
 	put,
 	del
-}
+};

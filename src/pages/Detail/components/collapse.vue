@@ -12,14 +12,14 @@
                         {{ detailData.ecRepName || '请选择' }}
                     </view>
                 </view>
-                <view class="item">
+                <!-- <view class="item">
                     <view class="label">
                         <image class="icon" width="10" height="10" mode="aspectFit" src="../../static/images/qindan.svg"
                             alt=""></image>
                         电气柜清单
                     </view>
                     <view class="value">请选择</view>
-                </view>
+                </view> -->
                 <view class="item" @click="handleDate('ecStartDate', detailData.ecStartDate, 'ec')">
                     <view class="label">
                         <image class="icon" width="10" height="10" mode="aspectFit" src="../../static/images/start.svg"

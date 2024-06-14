@@ -5,18 +5,22 @@
             <view class="card" v-for="(item, idx) in form" :key="idx">
                 <view class="title" v-if="!idx">基本信息</view>
                 <view class="list">
-                    <view class="item" v-for="formData in item" :key="formData.key">
-                        <view class="label">{{ formData.label }}：</view>
+                    <view class="item" v-for="(formData, index) in item" :key="formData.key">
+                        <view class="label" :class="{ required: formData.required }">{{ formData.label }}：</view>
                         <view class="value">
-                            <input type="text" v-model="formData.value" placeholder="请输入" v-if="!formData.type">
-                            <view v-else @click="handleProductCheck(formData.value)">{{ formData.value || '请选择' }}</view>
+                            <input type="text" minlength="6" v-model="formData.value" placeholder="请输入" v-if="!formData.type">
+                            <view v-else @click="handleProductCheck(formData.value, formData.type, { idx, index })">{{
+                                formData.value ||
+                                '请选择' }}</view>
                         </view>
                     </view>
                 </view>
             </view>
         </view>
         <up-picker :defaultIndex="defaultIndex" :show="productNameStatus" ref="uPickerRef" :columns="columns"
-            @confirm="handleChangeEpStatus"  @cancel="productNameStatus = false"></up-picker>
+            @confirm="handleChangeEpStatus" @cancel="productNameStatus = false"></up-picker>
+        <up-calendar :show="dateStatus" :defaultDate="defaultDate" @close="dateStatus = false"
+            @confirm="handleDateConfirm"></up-calendar>
         <view class="submit" @click="submit">提交</view>
     </view>
 </template>
@@ -27,6 +31,8 @@ import { ref } from 'vue';
 const type = ref("")
 const productNameStatus = ref(false)
 const defaultIndex = ref([0])
+const dateStatus = ref(false)
+const defaultDate = ref([Date.now()])
 const columns = ref([
     [
         "热压罐",
@@ -42,28 +48,49 @@ const form = ref([
         {
             label: "项目编号",
             key: "number",
-            value: ""
+            value: "",
+            required: true,
+            min: 6
         },
         {
             label: "产品编号",
             key: "productNumber",
-            value: ""
+            value: "",
+            required: true,
+            min: 6
         },
         {
             label: "客户名称",
             key: "customerName",
-            value: ""
+            value: "",
+            required: true
         },
         {
             label: "产品名称",
             key: "productName",
             type: 'select',
-            value: ""
+            value: "",
+            required: true
+        },
+        {
+            label: "下单日期",
+            key: "orderDate",
+            type: 'date-picker',
+            value: "",
+            required: true
+        },
+        {
+            label: "发货日期",
+            key: "deliveryDate",
+            type: 'date-picker',
+            value: "",
+            required: true
         },
         {
             label: "规格/型号",
             key: "model",
-            value: ""
+            value: "",
+            required: true
         }
     ], [
         {
@@ -259,6 +286,7 @@ const form = ref([
         }
     ]
 ]);
+const dateType = ref("")
 const number = ref("")
 const data = ref("")
 onLoad((options) => {
@@ -277,15 +305,25 @@ onLoad((options) => {
         getData(+options.id, options.number)
     }
 })
-
+const handleDateConfirm = (v) => {
+    let { idx, index } = dateType.value
+    form.value[idx][index].value = v[0]
+    dateStatus.value = false
+}
 // 表单引用  
-const handleProductCheck = (v) => {
-    
-    let index = columns.value[0].findIndex(item=> item == v)
-    if(index!=-1) {
-        defaultIndex.value = [index]
+const handleProductCheck = (v, type, { index, idx }) => {
+    if (type == 'date-picker') {
+        dateStatus.value = true
+        dateType.value = { index, idx }
+    } else {
+        let index = columns.value[0].findIndex(item => item == v)
+        if (index != -1) {
+            defaultIndex.value = [index]
+        }
+        productNameStatus.value = true
     }
-    productNameStatus.value = true
+
+
 }
 const editFormFun = (params) => {
     params.id = +data.value
@@ -318,14 +356,32 @@ const getData = (id, number) => {
 
 }
 const handleChangeEpStatus = (data) => {
-    form.value.forEach(item=> {
-        let index = item.findIndex(_item=> _item.key == 'productName')
-        if(index!=-1) {
+    form.value.forEach(item => {
+        let index = item.findIndex(_item => _item.key == 'productName')
+        if (index != -1) {
             item[index].value = data.value[0]
         }
     })
     productNameStatus.value = false
 }
+const errors = ref({});
+const validate = () => {
+    let valid = true;
+    errors.value = {};
+    form.value.forEach((section, sectionIndex) => {
+        section.forEach((field, fieldIndex) => {
+            if (field.required && !field.value) {
+                errors.value = `${field.label}是必填项`;
+                valid = false;
+                console.log(errors.value);
+            } else if(field.min && field.value.length <= 6) {
+                errors.value = `${field.label}不得小于6位`;
+                valid = false;
+            }
+        });
+    });
+    return valid;
+};
 // 提交方法  
 function submit() {
     // let params = {
@@ -337,6 +393,10 @@ function submit() {
         return obj;
     }, {});
     params.level = params.level ? +params.level : 1
+    if (!validate()) {
+        uni.$u.toast(errors.value)
+        return
+    }
     if (type.value == 'add') {
         $http.post("/project/add_project_info", params).then(res => {
             if (res.status.retCode == 0) {
@@ -413,6 +473,20 @@ function submit() {
                     color: rgb(49, 54, 57);
                     font-weight: bold;
                     white-space: nowrap;
+                }
+
+                .required {
+                    position: relative;
+                    padding-left: 30rpx;
+
+                    &::after {
+                        content: "*";
+                        display: block;
+                        position: absolute;
+                        color: red;
+                        left: 0;
+                        top: 0;
+                    }
                 }
 
                 .value {

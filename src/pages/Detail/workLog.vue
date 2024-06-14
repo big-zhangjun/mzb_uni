@@ -7,16 +7,19 @@
                     }}</text><up-icon :name="open ? 'arrow-up-fill' : 'arrow-down-fill'"
                     color="rgba(8, 14, 23, 0.4)"></up-icon></view>
         </view>
-        <view class="item">
-            <view class="label required">2.请输入地址</view>
+        <view class="item" @click="getPosoition">
+            <view class="label required">2.请选择地址</view>
             <view class="value" :class="{ actove: open }">
-                <input type="text" v-model="formData.address" class="adress" placeholder="请输入地址">
+                <text>{{ formData.address || '请选择地址'
+                    }}</text>
+                <!-- <input type="text" v-model="formData.address" class="adress" placeholder="请输入地址"> -->
             </view>
             <view class="position" @click="getPosoition">自动定位</view>
         </view>
         <view class="item">
             <view class="label required">3.项目信息：</view>
-            <view class="value" :class="{ actove: show }" @click="show = true"><text>{{ formData.projectName || '请用户信息'
+            <view class="value" :class="{ actove: show }" @click="show = true"><text>{{ fullName ||
+                '请选择项目信息'
                     }}</text><up-icon :name="show ? 'arrow-up-fill' : 'arrow-down-fill'"
                     color="rgba(8, 14, 23, 0.4)"></up-icon></view>
         </view>
@@ -45,23 +48,25 @@
                 <view class="title">项目信息</view>
                 <view class="confirm" @click="handleProjectConfirm">确定</view>
             </view>
+            <input type="text" v-model="customerName" class="customerName" placeholder="请输入客户名称" @input="handleSearch">
             <view class="content">
                 <view class="list">
                     <up-radio-group v-model="formData.projectName" placement="column">
                         <up-radio :customStyle="{ marginBottom: '40rpx' }" v-for="(item) in projectList" :key="item.id"
-                            :label="item.label" :name="item.label">
+                            :label="item.label" :name="item.id">
                         </up-radio>
                     </up-radio-group>
                 </view>
+                <view class="add" @click="handleAdd">新增</view>
             </view>
         </view>
     </up-popup>
 </template>
 
 <script setup>
-import { reactive, ref } from 'vue';
+import { computed, ref } from 'vue';
 import * as $http from '../../request/index'
-import { onLoad } from '@dcloudio/uni-app';
+import { onLoad, onShow } from '@dcloudio/uni-app';
 const formatter = (type, value) => {
     if (type === 'year') {
         return `${value}年`;
@@ -83,6 +88,7 @@ const formData = ref({
 })
 const latitude = ref(0)
 const longitude = ref(0)
+const customerName = ref("")
 const blogList = ref([])
 const projectName = ref("")
 const projectList = ref([])
@@ -92,12 +98,41 @@ const open = ref(false)
 const show = ref(false)
 
 onLoad(async (options) => {
-    await getProjectList()
     type.value = options.type
     if (options.type == 'edit') {
+        //  getData()
+    }
+})
+onShow(async () => {
+    await getProjectList()
+    if (type.value == 'edit') {
         getData()
     }
 })
+const fullName = computed(() => {
+    let res = projectList.value.find(item => item.id == formData.value.projectName)
+    console.log(res, 'ss');
+    if (res) {
+        return res.label
+    }
+});
+const debounce = (func, delay) => {
+    let timeoutId;
+
+    return function () {
+        const context = this;
+        const args = arguments;
+
+        clearTimeout(timeoutId);
+        timeoutId = setTimeout(() => {
+            func.apply(context, args);
+        }, delay);
+    };
+};
+const handleSearch = debounce(() => {
+    getProjectList()
+    // 处理搜索逻辑
+}, 300); // 设置防抖延迟时间，单位为毫秒
 const getData = () => {
     let result = uni.getStorageSync("detail")
     let keys = Object.keys(formData.value)
@@ -106,8 +141,9 @@ const getData = () => {
     })
     formData.value.content = result.content.split(",")
     let res = projectList.value.find(item => item.id == result.projectID)
+    console.log(res, 'sss');
     if (res) {
-        formData.value.projectName = res.label
+        formData.value.projectName = res.id
     }
 }
 const handleCancel = () => {
@@ -118,6 +154,7 @@ const handleConfirm = () => {
 }
 const getProjectList = async () => {
     const params = {
+        customerName: customerName.value,
         pageIndex: 1,
         pageSize: 100
     }
@@ -129,12 +166,17 @@ const getProjectList = async () => {
         }
     })
 }
-
+const handleAdd = () => {
+    uni.navigateTo({
+        url: "/pages/Product/productForm?type=add"
+    })
+}
 const getBlogList = async () => {
     const res = await $http.post("/blog/get_blog_content_list", {})
     blogList.value = res.data
 }
 getBlogList()
+
 const getPosoition = () => {
     uni.getLocation({
         type: 'wgs84', // 获取经纬度坐标信息
@@ -193,15 +235,15 @@ const submit = async () => {
         })
         return
     }
-    let res = await $http.post("/blog/check_blog_exist", {userID: uni.getStorageSync("user").id, blogDate: formatDate(blogDate)})
-    if(res.data.data) {
+    let res = await $http.post("/blog/check_blog_exist", { userID: uni.getStorageSync("user").id, blogDate: formatDate(blogDate) })
+    if (res.data.data) {
         uni.showToast("该日以创建过日志了，将会覆盖掉上次日志")
     }
     let projectData = projectList.value.find(item => item.label == projectName)
     let params = {
         userID: uni.getStorageSync("user").id,
         blogDate: formatDate(blogDate),
-        projectID: projectData.id,
+        projectID: projectName,
         address,
         longitude: longitude.value,
         latitude: latitude.value,
@@ -364,6 +406,13 @@ const editWork = async (params) => {
     }
 }
 
+.customerName {
+    border: solid #d4d4d4 1rpx;
+    padding: 20rpx 30rpx;
+    border-radius: 8rpx;
+    margin: 30rpx 0;
+}
+
 .flowForm {
     background-color: #F5F5F7;
     padding: 30rpx;
@@ -395,11 +444,29 @@ const editWork = async (params) => {
         background-color: #fff;
         margin-top: 30rpx;
         border-radius: 12rpx;
-        height: 853rpx;
+        height: 60vh;
         overflow: hidden;
         box-sizing: border-box;
         padding: 30rpx;
         overflow-y: scroll;
+    }
+
+    .add {
+        height: 96rpx;
+        background-color: rgb(25, 140, 254);
+        color: #fff;
+        width: 100%;
+        border: none;
+        border-radius: 14rpx;
+        font-size: 32rpx;
+        margin-top: 76rpx;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        &:active {
+            background-color: rgb(80, 167, 253);
+        }
     }
 
 }
