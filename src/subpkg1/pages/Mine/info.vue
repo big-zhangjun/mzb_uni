@@ -39,6 +39,11 @@ const columns = ref([
 const form = ref([
     [
         {
+            label: "真实姓名",
+            key: "realName",
+            value: ""
+        },
+        {
             label: "手机号码",
             key: "mobile",
             value: ""

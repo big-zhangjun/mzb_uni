@@ -14,8 +14,13 @@
                 <view class="level" :class="getColor(item.level)">P{{ item.level }}</view>
             </view>
             <view class="content">
-                <view class="size">规格型号：</view>
-                <view class="size-name">{{ item.model }}</view>
+                <view class="item">
+                    <view class="size">规格型号：</view>
+                    <view class="size-name">{{ item.model }}</view>
+                </view>
+                <view class="productName">
+                    {{ item.productName }}
+                </view>
             </view>
             <view class="footer">
                 <view class="item">
@@ -114,21 +119,21 @@ const filterData = ref([
     }
 ])
 const debounce = (func, delay) => {
-  let timeoutId;
+    let timeoutId;
 
-  return function() {
-    const context = this;
-    const args = arguments;
+    return function () {
+        const context = this;
+        const args = arguments;
 
-    clearTimeout(timeoutId);
-    timeoutId = setTimeout(() => {
-      func.apply(context, args);
-    }, delay);
-  };
+        clearTimeout(timeoutId);
+        timeoutId = setTimeout(() => {
+            func.apply(context, args);
+        }, delay);
+    };
 };
 const handleSearch = debounce(() => {
     handleEnter()
-  // 处理搜索逻辑
+    // 处理搜索逻辑
 }, 300); // 设置防抖延迟时间，单位为毫秒
 const handleFilter = () => {
     show.value = true
@@ -146,7 +151,7 @@ onReachBottom(() => {
     pageIndex.value++
     getData()
 })
-const pageIndex=ref(1)
+const pageIndex = ref(1)
 const handleAdd = () => {
     uni.navigateTo({
         url: "/pages/Product/productForm?type=add"
@@ -158,7 +163,7 @@ const goDetail = (data) => {
     })
 }
 onShow(() => {
-    authority.value = uni.getStorageSync("authority").filter(item=> item.moduleID == 16).map(item=> item.operateID);
+    authority.value = uni.getStorageSync("authority").filter(item => item.moduleID == 16).map(item => item.operateID);
     getData()
 })
 const getData = () => {
@@ -172,7 +177,7 @@ const getData = () => {
         pageIndex: pageIndex.value
     }
     $http.post("/project/get_project_list", params).then(res => {
-        list.value = [...list.value,...res.data.records]
+        list.value = [...list.value, ...res.data.records]
         totalPage.value = res.data.totalPage
     })
 }
@@ -183,10 +188,14 @@ const getColor = (v) => {
 }
 // 搜索
 const handleEnter = () => {
+    list.value = []
+    pageIndex.value = 1
     getData()
 };
 // 筛选确定
 const handleConfirm = () => {
+    list.value = []
+    pageIndex.value = 1
     let keys = ['productName', 'level']
     filterData.value.forEach(item => {
         if (keys.includes(item.key)) {
@@ -198,6 +207,8 @@ const handleConfirm = () => {
     getData()
 }
 const handleReset = () => {
+    list.value = []
+    pageIndex.value = 1
     let keys = ['productName', 'level']
     filterData.value.forEach(item => {
         item.checkList = []
@@ -325,7 +336,10 @@ const handleReset = () => {
             color: #919399;
             font-size: 28rpx;
             align-items: center;
-
+            justify-content: space-between;
+            .item {
+                display: flex;
+            }
             .size-name {
                 color: #12151b;
             }

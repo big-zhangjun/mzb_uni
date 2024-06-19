@@ -58,12 +58,18 @@
     "quickapp" : {},
     /* 小程序特有相关 */
     "mp-weixin" : {
-        "appid" : "",
+        "appid" : "wx45e7e45d1bc4274a",
         "setting" : {
             "urlCheck" : false,
-            "es6" : true
+            "es6" : true,
+            "minified" : true,
+            "postcss" : true
+        },
+        "optimization" : {
+            "subPackages" : true
         },
         "usingComponents" : true,
+        "lazyCodeLoading" : "requiredComponents",
         "requiredPrivateInfos" : [ "chooseLocation", "getLocation" ],
         "permission" : {
             "scope.userLocation" : {

@@ -33,35 +33,80 @@
 import { ref, reactive } from 'vue'
 
 const goPoduct = () => {
+    SubscriptionMessage()
     uni.navigateTo({
         url: "/pages/Product/index"
     })
 }
 const goElectrical = () => {
+    SubscriptionMessage()
     uni.navigateTo({
         url: "/pages/Electrical/index"
     })
 }
-const addWorkLog = () => {
-    wx.requestSubscribeMessage({
-        tmplIds: ['u8RuqCb4KsxNnPOrTaFkidLPJhmv-h4A4JvVVz2zIkc'], // 替换为你的消息模板ID
+// 订阅消息按钮
+const SubscriptionMessage = () => {
+    const tmplIds = "u8RuqCb4KsxNnPOrTaFkidLPJhmv-h4A4JvVVz2zIkc"
+    // 获取小程序订阅状态
+    uni.getSetting({
+        withSubscriptions: true,
         success(res) {
-            if (res['u8RuqCb4KsxNnPOrTaFkidLPJhmv-h4A4JvVVz2zIkc'] === 'accept') {
-                // 用户同意订阅消息，可以进行后续处理
-                console.log('订阅成功');
-                uni.navigateTo({
-                    url: `/pages/Detail/workLog?type=add`
+            console.log(res, '订阅信息', res.subscriptionsSetting);
+            if (!res.subscriptionsSetting.mainSwitch) {
+                uni.openSetting({
+                    success(res) {
+                        console.log('打开设置页', res.authSetting);
+                    }
+                })
+            } else {
+                uni.requestSubscribeMessage({
+                    tmplIds: [tmplIds],
+                    success(res) {
+                        console.log('requestSubscribeMessage 订阅信息', res);
+                        if (res[tmplIds] ==
+                            "accept") { // 用户点击确定后
+                            console.log('用户订阅点击确定按钮');
+                            // 后端接口
+                        } else {
+                            uni.showModal({
+                                title: '您未开启消息订阅',
+                                content: '为了给您提供更好的服务，请您授权消息订阅',
+                                success: res2 => {
+                                    if (res2.confirm) {
+                                        uni.openSetting({
+                                            success(res) {
+                                                console.log('打开设置页', res.authSetting);
+                                            }
+                                        })
+                                    } else {
+                                        console.log('决绝')
+                                    }
+                                }
+                            })
+
+                        }
+                    },
+                    fail(errMessage) {
+                        console.log("订阅消息 失败 ", errMessage);
+                    },
+                    complete() {
+                        console.log("成功 失败都执行 ");
+                    }
                 })
             }
         },
-        fail(err) {
-            console.error('订阅消息失败', err);
-        }
-    });
+    })
+}
+const addWorkLog = () => {
+    SubscriptionMessage()
+    uni.navigateTo({
+        url: `/pages/Detail/workLog?type=add`
+    })
 }
 const goStatistics = () => {
+    SubscriptionMessage()
     uni.navigateTo({
-        url: `/pages/Statistics/index`
+        url: `/subpkg1/pages/Statistics/index`
     })
 }
 </script>

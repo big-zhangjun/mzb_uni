@@ -17,8 +17,13 @@
                 <view class="level" :class="getColor(item.level)">P{{ item.level }}</view>
             </view>
             <view class="content">
-                <view class="size">规格型号：</view>
-                <view class="size-name">{{ item.model }}</view>
+                <view class="item">
+                    <view class="size">规格型号：</view>
+                    <view class="size-name">{{ item.model }}</view>
+                </view>
+                <view class="productName">
+                    {{ item.productName }}
+                </view>
             </view>
             <view class="footer">
                 <view class="item">
@@ -177,6 +182,8 @@ const getColor = (v) => {
 }
 // 搜索
 const handleEnter = () => {
+    list.value = []
+    pageIndex.value = 1
     getData()
 };
 // 筛选确定
@@ -189,10 +196,13 @@ const handleConfirm = () => {
         }
     })
     list.value = []
+    pageIndex.value = 1
     show.value = false
     getData()
 }
 const handleReset = () => {
+    list.value = []
+    pageIndex.value = 1
     let keys = ['productName', 'level']
     filterData.value.forEach(item => {
         item.checkList = []
@@ -333,12 +343,14 @@ const handleReset = () => {
             color: #919399;
             font-size: 28rpx;
             align-items: center;
-
+            justify-content: space-between;
+            .item {
+                display: flex;
+            }
             .size-name {
                 color: #12151b;
             }
         }
-
         .footer {
             margin-top: 30rpx;
             width: 100%;

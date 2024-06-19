@@ -71,11 +71,11 @@ const getImg = (data) => {
             "4.png",
             "5.png"
         ]
-        return `http://192.168.2.48:8012/pic/notice/${imgs[randomNum - 1]}`
+        return `https://www.ktsoftware.cn/pic/notice/${imgs[randomNum - 1]}`
     } else if (data.cover.includes("custom")) {
-        return `http://192.168.2.48:8012/pic/notice/${data.cover.split("/")[1]}`
+        return `https://www.ktsoftware.cn/pic/notice/${data.cover.split("/")[1]}`
     } else {
-        return 'http://192.168.2.48:8012' + data.cover.replace(/^\./, '')
+        return 'https://www.ktsoftware.cn/pic/notice/' + data.cover.replace(/^\./, '')
     }
 }
 </script>

@@ -203,11 +203,55 @@ const getPosoition = () => {
                 },
                 fail: function (locationRes) {
                     console.log('获取位置失败：' + locationRes.errMsg);
+                    wx.getSetting({
+                        success: res => {
+                            if (typeof (res.authSetting['scope.userLocation']) != 'undefined' && !res.authSetting['scope.userLocation']) {
+                                // 用户拒绝了授权，跳转设置页面
+                                uni.showModal({
+                                    title: '您未开启定位授权',
+                                    content: '为了给您提供更好的服务，请您授权定位',
+                                    success: res2 => {
+                                        if (res2.confirm) {
+                                            uni.openSetting({
+                                                success(res) {
+                                                    console.log('打开设置页', res.authSetting);
+                                                }
+                                            })
+                                        } else {
+                                            console.log('决绝')
+                                        }
+                                    }
+                                })
+                            }
+                        }
+                    });
                 }
             });
         },
         fail: function (res) {
             console.log('获取经纬度失败：' + res.errMsg);
+            wx.getSetting({
+                        success: res => {
+                            if (typeof (res.authSetting['scope.userLocation']) != 'undefined' && !res.authSetting['scope.userLocation']) {
+                                // 用户拒绝了授权，跳转设置页面
+                                uni.showModal({
+                                    title: '您未开启定位授权',
+                                    content: '为了给您提供更好的服务，请您授权定位',
+                                    success: res2 => {
+                                        if (res2.confirm) {
+                                            uni.openSetting({
+                                                success(res) {
+                                                    console.log('打开设置页', res.authSetting);
+                                                }
+                                            })
+                                        } else {
+                                            console.log('决绝')
+                                        }
+                                    }
+                                })
+                            }
+                        }
+                    });
         }
     });
 }

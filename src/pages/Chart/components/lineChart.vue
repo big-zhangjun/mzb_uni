@@ -5,7 +5,7 @@
 </template>
 <script setup>
 // 插件内的 二选一 
-import * as echarts from 'echarts'
+// import * as echarts from 'echarts'
 import { ref, onMounted } from 'vue'
 import * as $http from '../../../request/index'
 
