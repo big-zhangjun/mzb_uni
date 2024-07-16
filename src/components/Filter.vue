@@ -21,7 +21,7 @@ import { ref, defineProps, defineEmits } from 'vue'
 const props = defineProps({
     filterData: Array
 })
-const emit = defineEmits(['handleConfirm','handleReset'])
+const emit = defineEmits(['handleConfirm','handleReset', 'handleCheck'])
 const handleCheck = (data, value) => {
     // 单选
     if(data.single) {
@@ -43,6 +43,7 @@ const handleCheck = (data, value) => {
             data.checkList.push(value.id)
         }
     }
+    emit("handleCheck", {data,value})
 }
 const handleConfirm = () => {
     emit("handleConfirm")

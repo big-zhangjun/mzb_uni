@@ -17,13 +17,13 @@
                 <view class="icon">
                     <image class="img" mode="aspectFill" src="../../../static/menu/order.png" alt=""></image>
                 </view>
-                <text class="txt">创建日志</text>
+                <text class="txt">日志列表</text>
             </view>
             <view class="menu-item" @click="goStatistics">
                 <view class="icon">
                     <image class="img" mode="aspectFill" src="../../../static/menu/order.png" alt=""></image>
                 </view>
-                <text class="txt">出差分布</text>
+                <text class="txt">统计报表</text>
             </view>
         </view>
     </view>
@@ -99,14 +99,18 @@ const SubscriptionMessage = () => {
 }
 const addWorkLog = () => {
     SubscriptionMessage()
+    // uni.navigateTo({
+    //     url: `/pages/Detail/workLog?type=add`
+    // })
     uni.navigateTo({
-        url: `/pages/Detail/workLog?type=add`
+        url: `/pages/Work/index`
     })
 }
 const goStatistics = () => {
     SubscriptionMessage()
     uni.navigateTo({
-        url: `/subpkg1/pages/Statistics/index`
+        // url: `/subpkg1/pages/Statistics/index`
+        url: `/pages/Chart/index`
     })
 }
 </script>

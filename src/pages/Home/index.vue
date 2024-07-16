@@ -48,6 +48,10 @@ const param = ref({
     level: 0,
     productName: ''
 })
+wx.showShareMenu({
+  withShareTicket: true,
+  menus: ['shareAppMessage', 'shareTimeline']
+})
 const debounce = (func, delay) => {
     let timeoutId;
 

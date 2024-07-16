@@ -16,14 +16,14 @@ watch(
     (newVal, oldVal) => {
         if (newVal, oldVal) {
             //这里是数据更新变化后需要执行的动作
-            initLineChart(newVal)
+            initBarChart(newVal)
         }
     },
     { immediate: true, deep: true }
 )
-console.log(props.options);
 const chartRef = ref(null)
-const initLineChart = async (option) => {
+
+const initBarChart = async (option) => {
 
     if (!chartRef.value) return
     const myChart = await chartRef.value.init(echarts)
@@ -34,7 +34,7 @@ onMounted(() => {
     setTimeout(async () => {
         console.log(props.options, 'props.options');
         if (!chartRef.value || !props.options) return
-        initLineChart(props.options)
+        initBarChart(props.options)
     }, 300)
 })
 </script>

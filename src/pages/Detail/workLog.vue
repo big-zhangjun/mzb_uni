@@ -2,14 +2,14 @@
     <view class="work-log">
         <view class="item">
             <view class="label required">1.请选择日期：</view>
-            <view class="value" :class="{ actove: open }" @click="open = true"><text>{{ formatDate(formData.blogDate) ||
+            <view class="value" @click="open = true"><text>{{ formatDate(formData.blogDate) ||
                 '请选择日期'
                     }}</text><up-icon :name="open ? 'arrow-up-fill' : 'arrow-down-fill'"
                     color="rgba(8, 14, 23, 0.4)"></up-icon></view>
         </view>
         <view class="item" @click="getPosoition">
             <view class="label required">2.请选择地址</view>
-            <view class="value" :class="{ actove: open }">
+            <view class="value">
                 <text>{{ formData.address || '请选择地址'
                     }}</text>
                 <!-- <input type="text" v-model="formData.address" class="adress" placeholder="请输入地址"> -->
@@ -18,31 +18,37 @@
         </view>
         <view class="item">
             <view class="label required">3.项目信息：</view>
-            <view class="value" :class="{ actove: show }" @click="show = true"><text>{{ fullName ||
+            <view class="value" @click="chooseProduct('product')"><text>{{ fullName ||
                 '请选择项目信息'
                     }}</text><up-icon :name="show ? 'arrow-up-fill' : 'arrow-down-fill'"
                     color="rgba(8, 14, 23, 0.4)"></up-icon></view>
         </view>
-        <view class="item">
+        <view class="item" @click="chooseProduct('content')">
             <view class="label required">4.工作内容：</view>
-            <view class="work-list">
-                <up-checkbox-group v-model="formData.content" placement="column">
-                    <up-checkbox :customStyle="{ marginBottom: '8px' }" v-for="(item, index) in blogList" :key="index"
-                        :label="item.content" :name="item.content">
-                    </up-checkbox>
-                </up-checkbox-group>
-            </view>
+            <view class="value"><text>{{ productContent ||
+                '请选择工作内容：'
+                    }}</text><up-icon :name="show ? 'arrow-up-fill' : 'arrow-down-fill'"
+                    color="rgba(8, 14, 23, 0.4)"></up-icon></view>
         </view>
         <view class="item">
-            <view class="label required">5.备注：</view>
+            <view class="label">5.备注：</view>
             <up-textarea v-model="formData.remark" height="206rpx" placeholder="请输入内容"></up-textarea>
         </view>
-        <view class="btn" @click="submit">提交</view>
-        <up-datetime-picker hasInput :show="open" mode="date" :formatter="formatter" v-model="formData.blogDate"
-            @cancel="handleCancel" @confirm="handleConfirm"></up-datetime-picker>
+        <view class="btn" @click="submit" :class="{ disabled }">提交</view>
+        <view class="date" v-show="open">
+            <up-datetime-picker hasInput :show="open" mode="date" :formatter="formatter" v-model="formData.blogDate"
+                @cancel="handleCancel" @confirm="handleConfirm"></up-datetime-picker>
+        </view>
     </view>
+    <!-- <view class="last-work" v-if="showLastWork">
+        <view class="copy-title">可复用上份记录快速填写</view>
+        <view class="close" @click="showLastWork = false">
+            <up-icon class="close" name="close" color="#15151b" size="22"></up-icon>
+        </view>
+        <view class="btn" @click="getLastWork">复用上份记录填写</view>
+    </view> -->
     <up-popup :show="show" mode="bottom" @close="show = false" @open="open" :round="30">
-        <view class="flowForm">
+        <view class="flowForm" v-if="modelType == 'product'">
             <view class="flowForm-header">
                 <view class="cancle" @click="show = false">取消</view>
                 <view class="title">项目信息</view>
@@ -51,22 +57,48 @@
             <input type="text" v-model="customerName" class="customerName" placeholder="请输入客户名称" @input="handleSearch">
             <view class="content">
                 <view class="list">
-                    <up-radio-group v-model="formData.projectName" placement="column">
-                        <up-radio :customStyle="{ marginBottom: '40rpx' }" v-for="(item) in projectList" :key="item.id"
-                            :label="item.label" :name="item.id">
-                        </up-radio>
-                    </up-radio-group>
+                    <view class="item" :class="{ active: formData.projectName == item.id }"
+                        @click="handleCheckProduct(item)" v-for="(item) in projectList" :key="item.id">
+                        <view class="header">
+                            {{ item.label }}
+                        </view>
+                        <view class="info">
+                            <view class="productNumber"> {{ item.productNumber }}</view>
+                            <view class="date"> {{ item.orderDate }}</view>
+                        </view>
+                    </view>
                 </view>
                 <view class="add" @click="handleAdd">新增</view>
             </view>
         </view>
+        <view class="work-list" v-else>
+            <view class="flowForm-header">
+                <view class="cancle" @click="show = false">取消</view>
+                <view class="title">工作内容</view>
+                <view class="confirm" @click="handleProjectConfirm">确定</view>
+            </view>
+            <input type="text" v-model="workContentKey" class="customerName" placeholder="请输入工作内容"
+                @input="handleWorkSearch">
+            <view class="content">
+                <up-checkbox-group v-model="formData.content" placement="column" :key="key">
+                    <up-checkbox :customStyle="{ marginBottom: '8px' }" v-for="(item, index) in workList"
+                        :key="item.content" :label="item.content" :name="item.content">
+                    </up-checkbox>
+                </up-checkbox-group>
+            </view>
+            <view class="add-work" @click="handleWorkAdd">新增工作项 +</view>
+        </view>
     </up-popup>
+    <!-- 其他内容 -->
+    <FloatingButton @handleClick="getLastWork"></FloatingButton>
 </template>
 
 <script setup>
 import { computed, ref } from 'vue';
+import FloatingButton from '../../components/FloatingButton.vue';
 import * as $http from '../../request/index'
 import { onLoad, onShow } from '@dcloudio/uni-app';
+const key = ref(0)
 const formatter = (type, value) => {
     if (type === 'year') {
         return `${value}年`;
@@ -79,6 +111,8 @@ const formatter = (type, value) => {
     }
     return value;
 };
+const showLastWork = ref(true)
+const workContentKey = ref("")
 const formData = ref({
     remark: "",
     content: "",
@@ -96,8 +130,13 @@ const address = ref("")
 const type = ref("")
 const open = ref(false)
 const show = ref(false)
-
+const modelType = ref("")
 onLoad(async (options) => {
+    if (!uni.getStorageSync('user')) {
+        uni.reLaunch({
+            url: '/pages/Login/index',
+        });
+    }
     type.value = options.type
     if (options.type == 'edit') {
         //  getData()
@@ -105,17 +144,12 @@ onLoad(async (options) => {
 })
 onShow(async () => {
     await getProjectList()
+    await getBlogList()
     if (type.value == 'edit') {
         getData()
     }
 })
-const fullName = computed(() => {
-    let res = projectList.value.find(item => item.id == formData.value.projectName)
-    console.log(res, 'ss');
-    if (res) {
-        return res.label
-    }
-});
+const disabled = ref(false)
 const debounce = (func, delay) => {
     let timeoutId;
 
@@ -129,6 +163,37 @@ const debounce = (func, delay) => {
         }, delay);
     };
 };
+const fullName = computed(() => {
+    let res = projectList.value.find(item => item.id == formData.value.projectName)
+    if (res) {
+        return res.label
+    }
+});
+const productContent = computed(() => {
+    return formData.value.content ? formData.value.content.join("，") : ""
+});
+
+const workList = computed(() => {
+    let result = blogList.value.filter(item => item.content.includes(workContentKey.value))
+    if (workContentKey.value) {
+        return result
+    } else {
+        return blogList.value
+    }
+});
+const handleWorkSearch = debounce((e) => {
+    let keyword = e.target.value
+    let result = blogList.value.filter(item => item.content.includes(keyword))
+    console.log(result);
+    // 处理搜索逻辑
+}, 300);
+const chooseProduct = (value) => {
+    show.value = true
+    modelType.value = value
+}
+const handleCheckProduct = (data) => {
+    formData.value.projectName = data.id
+}
 const handleSearch = debounce(() => {
     getProjectList()
     // 处理搜索逻辑
@@ -141,9 +206,14 @@ const getData = () => {
     })
     formData.value.content = result.content.split(",")
     let res = projectList.value.find(item => item.id == result.projectID)
-    console.log(res, 'sss');
     if (res) {
         formData.value.projectName = res.id
+    }
+    let user = uni.getStorageSync("user")
+    if (result.userID !== user.id) {
+        disabled.value = true
+    } else {
+        disabled.value = false
     }
 }
 const handleCancel = () => {
@@ -156,26 +226,69 @@ const getProjectList = async () => {
     const params = {
         customerName: customerName.value,
         pageIndex: 1,
-        pageSize: 100
+        pageSize: 1000
     }
     const res = await $http.post("/project/get_project_list", params)
     projectList.value = res.data.records.map(item => {
         return {
             id: item.id,
-            label: item.customerName + item.model
+            label: item.customerName + item.model,
+            orderDate: item.orderDate,
+            productNumber: item.productNumber
         }
     })
+}
+const getLastWork = async () => {
+    let user = uni.getStorageSync('user')
+    const params = {
+        "userID": user.id
+    }
+    const response = await $http.post("/blog/get_last_blog_info", params)
+    const result = response.data
+    if (!result) {
+        uni.showToast({
+            title: '暂未查询到上次记录',
+            icon: 'none'
+        })
+        showLastWork.value = false
+        return
+    }
+    let keys = Object.keys(formData.value)
+    console.log(keys);
+    keys.forEach(item => {
+        if(item!=="blogDate") {
+            formData.value[item] = result[item]
+        }
+    })
+    longitude.value = result.longitude
+    latitude.value = result.latitude
+    formData.value.content = result.content.split(",")
+    let res = projectList.value.find(item => item.id == result.projectID)
+    if (res) {
+        formData.value.projectName = res.id
+    }
+    showLastWork.value = false
+    if (result.userID !== user.id) {
+        disabled.value = true
+    } else {
+        disabled.value = false
+    }
 }
 const handleAdd = () => {
     uni.navigateTo({
         url: "/pages/Product/productForm?type=add"
     })
 }
+const handleWorkAdd = () => {
+    uni.navigateTo({
+        url: "/subpkg1/pages/work/workForm?type=add"
+    })
+
+}
 const getBlogList = async () => {
     const res = await $http.post("/blog/get_blog_content_list", {})
     blogList.value = res.data
 }
-getBlogList()
 
 const getPosoition = () => {
     uni.getLocation({
@@ -231,32 +344,31 @@ const getPosoition = () => {
         fail: function (res) {
             console.log('获取经纬度失败：' + res.errMsg);
             wx.getSetting({
-                        success: res => {
-                            if (typeof (res.authSetting['scope.userLocation']) != 'undefined' && !res.authSetting['scope.userLocation']) {
-                                // 用户拒绝了授权，跳转设置页面
-                                uni.showModal({
-                                    title: '您未开启定位授权',
-                                    content: '为了给您提供更好的服务，请您授权定位',
-                                    success: res2 => {
-                                        if (res2.confirm) {
-                                            uni.openSetting({
-                                                success(res) {
-                                                    console.log('打开设置页', res.authSetting);
-                                                }
-                                            })
-                                        } else {
-                                            console.log('决绝')
+                success: res => {
+                    if (typeof (res.authSetting['scope.userLocation']) != 'undefined' && !res.authSetting['scope.userLocation']) {
+                        // 用户拒绝了授权，跳转设置页面
+                        uni.showModal({
+                            title: '您未开启定位授权',
+                            content: '为了给您提供更好的服务，请您授权定位',
+                            success: res2 => {
+                                if (res2.confirm) {
+                                    uni.openSetting({
+                                        success(res) {
+                                            console.log('打开设置页', res.authSetting);
                                         }
-                                    }
-                                })
+                                    })
+                                } else {
+                                    console.log('决绝')
+                                }
                             }
-                        }
-                    });
+                        })
+                    }
+                }
+            });
         }
     });
 }
 const handleProjectConfirm = () => {
-    console.log(projectName.value);
     show.value = false
 }
 const formatDate = (timestamp) => {
@@ -269,10 +381,70 @@ const formatDate = (timestamp) => {
     const day = date.getDate();
     return `${year}-${String(month).padStart(2, 0)}-${String(day).padStart(2, 0)}`;
 }
+// 订阅消息按钮
+const SubscriptionMessage = () => {
+    const tmplIds = "u8RuqCb4KsxNnPOrTaFkidLPJhmv-h4A4JvVVz2zIkc"
+    // 获取小程序订阅状态
+    uni.getSetting({
+        withSubscriptions: true,
+        success(res) {
+            console.log(res, '订阅信息', res.subscriptionsSetting);
+            if (!res.subscriptionsSetting.mainSwitch) {
+                uni.openSetting({
+                    success(res) {
+                        console.log('打开设置页', res.authSetting);
+                    }
+                })
+            } else {
+                uni.requestSubscribeMessage({
+                    tmplIds: [tmplIds],
+                    success(res) {
+                        console.log('requestSubscribeMessage 订阅信息', res);
+                        if (res[tmplIds] ==
+                            "accept") { // 用户点击确定后
+                            console.log('用户订阅点击确定按钮');
+                            // 后端接口
+                        } else {
+                            uni.showModal({
+                                title: '您未开启消息订阅',
+                                content: '为了给您提供更好的服务，请您授权消息订阅',
+                                success: res2 => {
+                                    if (res2.confirm) {
+                                        uni.openSetting({
+                                            success(res) {
+                                                console.log('打开设置页', res.authSetting);
+                                            }
+                                        })
+                                    } else {
+                                        console.log('决绝')
+                                    }
+                                }
+                            })
 
+                        }
+                    },
+                    fail(errMessage) {
+                        console.log("订阅消息 失败 ", errMessage);
+                    },
+                    complete() {
+                        console.log("成功 失败都执行 ");
+                    }
+                })
+            }
+        },
+    })
+}
 const submit = async () => {
+    SubscriptionMessage()
+    if (disabled.value) {
+        uni.showToast({
+            title: "只允许本人修改",
+            icon: "none"
+        })
+        return
+    }
     const { projectName, address, remark, content, blogDate } = formData.value
-    if (!projectName || !address || !remark || !content || !blogDate) {
+    if (!projectName || !address || !content || !blogDate) {
         uni.showToast({
             title: "请检查必填信息",
             icon: "none"
@@ -291,19 +463,20 @@ const submit = async () => {
         address,
         longitude: longitude.value,
         latitude: latitude.value,
-        content: content.join(","),
+        content: content && content.join(","),
         remark
     }
-    if (type.value == 'add') {
-        addWork(params)
-    } else {
+    if (type.value == 'edit') {
         editWork(params)
+    } else {
+        addWork(params)
     }
 
     let addFun = blogList.value.filter(item => content.includes(item.content)).map(item => item.contentType)
     addFun = [...new Set(addFun)]
+    console.log(projectData, 'projectData');
     addFun.forEach(async item => {
-        await addUser(item, projectData.id)
+        await addUser(item, formData.value.projectName)
     })
 }
 const addUser = async (type, id) => {
@@ -341,8 +514,15 @@ const addWork = async (params) => {
             icon: "none"
         })
         setTimeout(() => {
-            uni.navigateBack()
+            uni.navigateTo({
+                url: `/pages/Work/index`
+            })
         }, 2000);
+    } else {
+        uni.showToast({
+            title: res.status.msg,
+            icon: 'none'
+        })
     }
 }
 const editWork = async (params) => {
@@ -369,11 +549,11 @@ const editWork = async (params) => {
     margin-top: 30rpx;
     padding: 30rpx;
     box-sizing: border-box;
-    padding-top: 80rpx;
+    padding-top: 50rpx;
 
     .item {
         padding-left: 20rpx;
-        margin-bottom: 80rpx;
+        margin-bottom: 40rpx;
 
         &:deep(.u-textarea) {
             background-color: #F1F0F5;
@@ -435,18 +615,28 @@ const editWork = async (params) => {
 
     }
 
-    .btn {
-        width: 100%;
-        line-height: 88rpx;
-        background: linear-gradient(160deg, rgb(62, 161, 253) 0%, rgb(55, 133, 250) 100%);
-        border-radius: 8rpx;
-        text-align: center;
-        color: #fff;
-        font-size: 28rpx;
 
-        &:active {
-            background-color: rgb(80, 167, 253);
-        }
+}
+
+.btn {
+    width: 100%;
+    line-height: 88rpx;
+    background: linear-gradient(160deg, rgb(62, 161, 253) 0%, rgb(55, 133, 250) 100%);
+    border-radius: 8rpx;
+    text-align: center;
+    color: #fff;
+    font-size: 28rpx;
+
+    &:active {
+        background-color: rgb(80, 167, 253);
+    }
+}
+
+.disabled {
+    background: rgb(207, 207, 207);
+
+    &:active {
+        background-color: rgb(182, 182, 182);
     }
 }
 
@@ -457,7 +647,8 @@ const editWork = async (params) => {
     margin: 30rpx 0;
 }
 
-.flowForm {
+.flowForm,
+.work-list {
     background-color: #F5F5F7;
     padding: 30rpx;
 
@@ -480,6 +671,60 @@ const editWork = async (params) => {
         .confirm {
             color: #12151b;
             font-size: 32rpx;
+        }
+    }
+
+    .list {
+        display: flex;
+        flex-direction: column;
+
+        .item {
+            padding: 30rpx 0;
+            padding-left: 60rpx;
+            position: relative;
+            border-bottom: 1rpx solid rgb(235, 235, 235);
+            font-style: 28rpx;
+
+            &:first-child {
+                padding-top: 0;
+            }
+
+            .info {
+                display: flex;
+                justify-content: space-between;
+                margin-top: 4px;
+                color: #8a8a8a;
+                font-size: 26rpx;
+            }
+
+            &::after {
+                content: "";
+                position: absolute;
+                left: 0;
+                top: 50%;
+                transform: translateY(-50%);
+                display: block;
+                width: 36rpx;
+                height: 36rpx;
+                border-radius: 50%;
+                // background-color: rgb(39, 124, 252);
+                border: solid rgb(39, 124, 252) 2rpx;
+            }
+        }
+
+        .active {
+            &::before {
+                content: "";
+                position: absolute;
+                left: 11rpx;
+                top: 50%;
+                transform: translateY(-50%);
+                display: block;
+                width: 20rpx;
+                height: 20rpx;
+                border-radius: 50%;
+                background-color: rgb(39, 124, 252);
+            }
         }
     }
 
@@ -511,6 +756,48 @@ const editWork = async (params) => {
         &:active {
             background-color: rgb(80, 167, 253);
         }
+    }
+
+    .add-work {
+        height: 96rpx;
+        border: solid 1px rgb(184, 184, 184);
+        color: rgb(184, 184, 184);
+        width: 100%;
+        border-radius: 14rpx;
+        font-size: 32rpx;
+        margin-top: 36rpx;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        &:active {
+            background-color: rgb(80, 167, 253);
+        }
+    }
+
+}
+
+.last-work {
+    position: fixed;
+    width: calc(100vw - 60rpx);
+    background-color: #fff;
+    bottom: 0rpx;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 5;
+    box-sizing: border-box;
+    padding: 40rpx;
+    box-shadow: 4rpx 4rpx 20rpx 4rpx rgba(0, 0, 0, .12);
+
+    .copy-title {
+        font-size: 28rpx;
+        margin-bottom: 48rpx;
+    }
+
+    .close {
+        position: absolute;
+        right: 40rpx;
+        top: 40rpx;
     }
 
 }

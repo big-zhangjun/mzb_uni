@@ -13,14 +13,21 @@
         </view>
         <view class="card m25 nf">
             <view class="title">基本信息</view>
-            <view class="item" @click="resetPassword">
+            <view class="item" @click="goPage('/subpkg1/pages/Mine/resetPassword')">
                 <up-icon name="lock-open" color="#12151b" size="24"></up-icon>
                 <view class="label">修改密码</view>
                 <up-icon name="arrow-right" color="rgb(144,157,153)" size="14"></up-icon>
             </view>
-            <view class="item" @click="editUser">
+            <!-- <view class="item"  @click="goPage('/subpkg1/pages/Mine/info')">
                 <up-icon name="list-dot" color="#12151b" size="24"></up-icon>
                 <view class="label">修改信息</view>
+                <up-icon name="arrow-right" color="rgb(144,157,153)" size="14"></up-icon>
+            </view> -->
+        </view>
+        <view class="card m25 nf pt0">
+            <view class="item" @click="goPage('/subpkg1/pages/work/statistics')">
+                <up-icon name="list-dot" color="#12151b" size="24"></up-icon>
+                <view class="label">日志统计</view>
                 <up-icon name="arrow-right" color="rgb(144,157,153)" size="14"></up-icon>
             </view>
         </view>
@@ -44,17 +51,12 @@ const show = ref(false)
 onLoad(() => {
     user.value = uni.getStorageSync('user')
 })
-const resetPassword = () => {
+const goPage = (pages) => {
     uni.navigateTo({
-        url: "/subpkg1/pages/Mine/resetPassword"
+        url: pages
     })
 }
 
-const editUser = () => {
-    uni.navigateTo({
-        url: "/subpkg1/pages/Mine/info"
-    })
-}
 </script>
 
 <style lang="scss" scoped>
@@ -134,6 +136,9 @@ const editUser = () => {
                 color: #aaaaaa;
             }
         }
+    }
+    .pt0 {
+        padding-top: 0;
     }
 
     .m25 {

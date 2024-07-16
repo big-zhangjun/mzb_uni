@@ -88,8 +88,20 @@ const filterData = ref([
                 id: "固化炉"
             },
             {
+                label: "浸渍罐",
+                id: "浸渍罐"
+            },
+            {
                 label: "系统改造",
                 id: "系统改造"
+            },
+            {
+                label: "冷却系统",
+                id: "冷却系统"
+            },
+            {
+                label: "烘箱",
+                id: "烘箱"
             }
         ]
     },
@@ -119,6 +131,10 @@ const filterData = ref([
             {
                 label: "P4",
                 id: 4
+            },
+            {
+                label: "P5",
+                id: 5
             }
         ]
     }
@@ -139,11 +155,6 @@ const close = () => {
 
 const open = () => {
 
-}
-const handleAdd = () => {
-    uni.navigateTo({
-        url: "/pages/Product/productForm?type=add"
-    })
 }
 const goDetail = (data) => {
     uni.navigateTo({
@@ -344,13 +355,16 @@ const handleReset = () => {
             font-size: 28rpx;
             align-items: center;
             justify-content: space-between;
+
             .item {
                 display: flex;
             }
+
             .size-name {
                 color: #12151b;
             }
         }
+
         .footer {
             margin-top: 30rpx;
             width: 100%;

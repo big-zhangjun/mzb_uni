@@ -33,7 +33,7 @@ const handleConfirm = async () => {
         password: getMD5Up(password.value),
     }
     try {
-        let res = await $http.post("/user/upload_user_password", params)
+        let res = await $http.post("/user/update_user_password", params)
         if (res.status.retCode == 0) {
             uni.$u.toast('操作成功')
             setTimeout(() => {

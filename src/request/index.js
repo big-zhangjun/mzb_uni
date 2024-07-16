@@ -1,6 +1,6 @@
 import md5 from "js-md5";
-// const config_url = "http://3260n2b816.wicp.vip:31719";
-const config_url = "https://www.ktsoftware.cn";
+const config_url = "http://192.168.2.48:8012";
+// const config_url = "https://www.ktsoftware.cn";
 let user = uni.getStorageSync("user");
 let id = "2-0";
 let ts = Date.now();

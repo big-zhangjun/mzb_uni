@@ -7,6 +7,12 @@
 			}
 		},
 		{
+			"path": "pages/Work/index",
+			"style": {
+				"navigationBarTitleText": "日志列表"
+			}
+		},
+		{
 			"path": "pages/Chart/index",
 			"style": {
 				"navigationBarTitleText": "统计"
@@ -93,7 +99,6 @@
 		{
 			"root": "subpkg1",
 			"pages": [
-				
 				{
 					"path": "pages/Mine/resetPassword",
 					"style": {
@@ -107,17 +112,22 @@
 					}
 				},
 				{
-					"path": "pages/Statistics/index",
+					"path": "pages/work/workForm",
 					"style": {
-						"navigationBarTitleText": "出差分布",
-						"pageOrientation": "landscape"
+						"navigationBarTitleText": "新增工作内容"
+					}
+				},
+				{
+					"path": "pages/work/statistics",
+					"style": {
+						"navigationBarTitleText": "日志统计"
 					}
 				}
 			]
 		}
 	],
 	"usingComponents": {
-	    "ec-canvas": "../../components/ec-canvas/ec-canvas"
+		"ec-canvas": "../../components/ec-canvas/ec-canvas"
 	},
 	"easycom": {
 		"autoscan": true,
@@ -125,7 +135,7 @@
 		"custom": {
 			"^u--(.*)": "uview-plus/components/u-$1/u-$1.vue",
 			"^up-(.*)": "uview-plus/components/u-$1/u-$1.vue",
-	        "^u-([^-].*)": "uview-plus/components/u-$1/u-$1.vue"
+			"^u-([^-].*)": "uview-plus/components/u-$1/u-$1.vue"
 		}
 	},
 	"tabBar": {
@@ -152,7 +162,6 @@
 				"iconPath": "static/tabbar/mine.png",
 				"selectedIconPath": "static/tabbar/mine_active.png"
 			}
-			
 		]
 	},
 	"globalStyle": {

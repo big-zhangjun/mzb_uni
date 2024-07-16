@@ -7,7 +7,6 @@
 // 插件内的 二选一 
 // import * as echarts from 'echarts'
 const echarts = require('../../../static/echarts.min.js')
-console.log(echarts, 'echarts');
 import { ref, onMounted } from 'vue'
 // import chinaMapData from './china.json'; // 修改路径为你的实际路径
 import * as $http from '../../../request/index'

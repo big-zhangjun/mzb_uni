@@ -89,6 +89,14 @@ const filterData = ref([
             {
                 label: "系统改造",
                 id: "系统改造"
+            },
+            {
+                label: "冷却系统",
+                id: "冷却系统"
+            },
+            {
+                label: "烘箱",
+                id: "烘箱"
             }
         ]
     },
@@ -114,6 +122,10 @@ const filterData = ref([
             {
                 label: "P4",
                 id: 4
+            },
+            {
+                label: "P5",
+                id: 5
             }
         ]
     }
