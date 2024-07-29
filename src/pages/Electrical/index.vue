@@ -7,9 +7,9 @@
             <image mode="aspectFit" class="icon" src="../../static/filter.png"></image>
         </view>
     </view>
-    <view class="tabs">
+    <!-- <view class="tabs">
         <up-tabs :list="list1" @click="handleTabClick"></up-tabs>
-    </view>
+    </view> -->
     <view class="pages">
         <view class="card" v-for="item in list" :key="item.id" @click="goDetail(item)" v-if="list.length">
             <view class="header">
@@ -141,7 +141,7 @@ const filterData = ref([
 ])
 const totalPage = ref(1)
 onReachBottom(() => {
-    if (pageIndex.value >= totalPage.value) return
+     
     pageIndex.value++
     getData()
 })
@@ -178,7 +178,7 @@ const getData = () => {
         productName: param.value.productName,
         level: param.value.level,
         pageSize: 10,
-        status: status.value,
+        // status: status.value,
         pageIndex: pageIndex.value
     }
     $http.post("/project/get_ep_list", params).then(res => {

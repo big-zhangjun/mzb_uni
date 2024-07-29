@@ -10,24 +10,24 @@
     <view class="pages">
         <view class="card" v-for="item in list" :key="item.id" @click="goDetail(item)" v-if="list.length">
             <view class="header">
-                <view class="title">{{ item.customerName }}</view>
-                <view class="level" :class="getColor(item.level)">P{{ item.level }}</view>
+                <view class="title">{{ item.customerName || "通用耗材领料" }}</view>
+                <!-- <view class="level" :class="getColor(item.level)">P{{ item.level }}</view> -->
             </view>
             <view class="content">
-                <view class="item">
+                <view class="item" v-if="item.model">
                     <view class="size">规格型号：</view>
                     <view class="size-name">{{ item.model }}</view>
                 </view>
                 <view class="productName">
-                    {{ item.productName }}
+                    {{ item.applyRealName }}
                 </view>
             </view>
             <view class="footer">
                 <view class="item">
-                    <view class="label">项目编号：</view>
-                    <view class="name">{{ item.number }}</view>
+                    <view class="label">申请日期：</view>
+                    <view class="name">{{ item.applyDate }}</view>
                 </view>
-                <view class="item">
+                <view class="item" v-if="item.productNumber">
                     <view class="label">产品编号：</view>
                     <view class="name">{{ item.productNumber }}</view>
                 </view>
@@ -36,20 +36,24 @@
         <u-empty mode="data" v-else>
         </u-empty>
     </view>
-    <view class="add" @click="handleAdd" v-if="authority.includes(1)">
-        <image class="img" mode="aspectFill" src="../../static/images/add.png" alt=""></image>
-    </view>
     <!-- 弹出层 -->
     <u-popup :show="show" @close="close" @open="open" mode="right" :closeOnClickOverlay="true">
-        <filter @handleConfirm="handleConfirm" @handleReset="handleReset" :filterData="filterData"></filter>
+        <filter @handleConfirm="handleConfirm" @handleReset="handleReset" :filterData="filterData"
+            @handleCheck="handleCheck"></filter>
     </u-popup>
+    <!-- <view class="add" @click="handleAdd" v-if="authority.includes(1)">
+        <image class="img" mode="aspectFill" src="../../static/images/add.png" alt=""></image>
+    </view> -->
+    <FloatingButton @handleClick="handleAddShot" :type="'add'"></FloatingButton>
+
 </template>
 
 <script setup>
+import FloatingButton from '../../../components/FloatingButton.vue';
 import { ref } from 'vue'
-import filter from "../../components/Filter.vue";
 import { onReachBottom, onShow } from '@dcloudio/uni-app';
-import * as $http from '../../request/index'
+import * as $http from '../../../request/index'
+import filter from "../../../components/Filter.vue";
 const list = ref([])
 const customerName = ref("")
 let show = ref(false)
@@ -60,76 +64,53 @@ const param = ref({
 const authority = ref([])
 const filterData = ref([
     {
-        title: "产品名称",
+        title: "部门",
         single: true,
-        key: "productName",
+        key: "applyDeptID",
+        type: '',
+        checkList: [],
+        children: [
+
+        ]
+    },
+    {
+        title: "在职离职",
+        single: true,
+        key: "resign",
         type: '',
         checkList: [],
         children: [
             {
-                label: "热压罐",
-                id: "热压罐"
+                label: "在职",
+                id: 2
             },
             {
-                label: "储气罐",
-                id: "储气罐"
-            },
-            {
-                label: "液压釜",
-                id: "液压釜"
-            },
-            {
-                label: "固化炉",
-                id: "固化炉"
-            },
-            {
-                label: "浸渍罐",
-                id: "浸渍罐"
-            },
-            {
-                label: "系统改造",
-                id: "系统改造"
-            },
-            {
-                label: "冷却系统",
-                id: "冷却系统"
-            },
-            {
-                label: "烘箱",
-                id: "烘箱"
+                label: "离职",
+                id: 1
             }
         ]
     },
+
     {
-        title: "级别",
-        key: "level",
+        title: "员工",
+        key: "applyUserID",
         single: true,
         checkList: [],
         type: 'number',
         children: [
-            {
-                label: "P1",
-                id: 1
-            },
-            {
-                label: "P2",
-                id: 2
-            },
-            {
-                label: "P3",
-                id: 3
-            },
-            {
-                label: "P4",
-                id: 4
-            },
-            {
-                label: "P5",
-                id: 5
-            }
+
         ]
     }
 ])
+const resign = ref(2)
+const deptID = ref()
+const disabled = ref(false)
+const userList = ref([])
+const deptList = ref([])
+const form = ref({
+    applyDeptID: undefined,
+    applyUserID: undefined
+})
 const debounce = (func, delay) => {
     let timeoutId;
 
@@ -150,6 +131,11 @@ const handleSearch = debounce(() => {
 const handleFilter = () => {
     show.value = true
 }
+const handleAddShot = () => {
+    uni.navigateTo({
+        url: "/subpkg1/pages/Material/addMaterial?type=add"
+    })
+}
 const close = () => {
     show.value = false
 }
@@ -157,38 +143,131 @@ const close = () => {
 const open = () => {
 
 }
+const getUserInfo = async () => {
+    let id = uni.getStorageSync('user').id
+    let res = await $http.post('/user/get_user_info', { id })
+    let dataAuth = res.data.dataAuth
+    let deptRes = await $http.post('/dept/get_dept_list2', {})
+    // let userRes = await $http.post('/dept/get_dept_list2', {  })({applyDeptID:res.data.applyDeptID })
+    switch (dataAuth) {
+        case 0:
+            deptList.value = deptRes.data
+            disabled.value = false
+            userList.value = []
+            form.value.applyDeptID = undefined
+            form.value.applyUserID = undefined
+            break;
+        case 1:
+            deptList.value = deptRes.data.filter(item => item.id == res.data.applyDeptID)
+            let userRess = await $http.post('/user/get_user_list2', { deptID: res.data.applyDeptID })
+            userList.value = userRess.data
+            disabled.value = false
+            form.value.applyDeptID = res.data.applyDeptID
+            form.value.applyUserID = res.data.id
+            break
+        case 2:
+            deptList.value = deptRes.data.filter(item => item.id == res.data.applyDeptID)
+            form.value.applyDeptID = res.data.applyDeptID
+            let userRes = await $http.post('/user/get_user_list2', { deptID: res.data.applyDeptID })
+            userList.value = userRes.data
+            form.value.applyUserID = res.data.id
+            disabled.value = true
+            break
+        // userList.value = userRes.data.data
+    }
+    getFilterData('applyDeptID', deptList.value, 'deptName', 'id')
+    getFilterData('applyUserID', userList.value, 'userName', 'id')
+}
+const handleCheck = async ({ data, value }) => {
+    if(data.key == "resign") {
+        resign.value = value.id
+        let userRes = await $http.post('/user/get_user_list2', { deptID: deptID.value, resign: resign.value })
+        form.value.applyUserID = undefined
+        form.value.applyDeptID = deptID.value
+        userList.value = userRes.data
+        getFilterData('applyUserID', userList.value, 'userName', 'id')
+    }
+    if (data.key == 'applyDeptID') {
+        deptID.value = value.id
+        let userRes = await $http.post('/user/get_user_list2', { deptID: deptID.value, resign: resign.value })
+        form.value.applyUserID = undefined
+        form.value.applyDeptID = value.id
+        userList.value = userRes.data
+        getFilterData('applyUserID', userList.value, 'userName', 'id')
+    }
+    
+}
+const handleConfirm = () => {
+    pageIndex.value = 1
+    let keys = ['productName', 'level', 'applyDeptID', 'applyUserID']
+    filterData.value.forEach(item => {
+        if (keys.includes(item.key)) {
+            let v = item.checkList
+            form.value[item.key] = item.type == 'number' ? v.join("") ? +v.join("") : 0 : v.join("")
+        }
+    })
+    show.value = false
+    list.value = []
+    getData()
+}
+const getFilterData = (key, list, label, id) => {
+    let res = filterData.value.find(item => item.key == key)
+    if (res) {
+        res.children = list.map(item => {
+            return {
+                id: item[id],
+                label: item[label]
+            }
+        })
+    }
+}
+const handleReset = () => {
+    pageIndex.value = 1
+    let keys = ['productName', 'level', 'applyDeptID', 'applyUserID']
+
+    filterData.value.forEach(item => {
+        item.checkList = []
+        if (keys.includes(item.key)) {
+            let v = item.checkList
+            form.value[item.key] = item.type == 'number' ? v.join("") ? +v.join("") : 0 : v.join("")
+        }
+    })
+    show.value = false
+    list.value = []
+    getData()
+}
 const totalPage = ref(1)
 onReachBottom(() => {
-     
+
     pageIndex.value++
     getData()
 })
 const pageIndex = ref(1)
-const handleAdd = () => {
-    uni.navigateTo({
-        url: "/pages/Product/productForm?type=add"
-    })
-}
 const goDetail = (data) => {
     uni.navigateTo({
-        url: `/pages/Product/detail?id=${data.id}&number=${data.number}`
+        url: `/subpkg1/pages/Material/detail?id=${data.id}&number=${data.number}`
     })
 }
+getUserInfo().then(() => {
+    list.value = []
+    getData()
+})
 onShow(() => {
     authority.value = uni.getStorageSync("authority").filter(item => item.moduleID == 16).map(item => item.operateID);
+    list.value = []
     getData()
 })
 const getData = () => {
     let params = {
-        number: "",
-        productNumber: "",
         customerName: customerName.value,
-        productName: param.value.productName,
-        level: param.value.level,
+        deleted: 2,
         pageSize: 10,
-        pageIndex: pageIndex.value
+        productName: param.value.productName,
+        pageIndex: pageIndex.value,
+        applyDeptID: +form.value.applyDeptID,
+        applyUserID: +form.value.applyUserID,
     }
-    $http.post("/project/get_project_list", params).then(res => {
+    $http.post("/shotage/get_shotage_list", params).then(res => {
         list.value = [...list.value, ...res.data.records]
         totalPage.value = res.data.totalPage
     })
@@ -205,33 +284,33 @@ const handleEnter = () => {
     getData()
 };
 // 筛选确定
-const handleConfirm = () => {
-    list.value = []
-    pageIndex.value = 1
-    let keys = ['productName', 'level']
-    filterData.value.forEach(item => {
-        if (keys.includes(item.key)) {
-            let v = item.checkList
-            param.value[item.key] = item.type == 'number' ? v.join("") ? +v.join("") : 0 : v.join("")
-        }
-    })
-    show.value = false
-    getData()
-}
-const handleReset = () => {
-    list.value = []
-    pageIndex.value = 1
-    let keys = ['productName', 'level']
-    filterData.value.forEach(item => {
-        item.checkList = []
-        if (keys.includes(item.key)) {
-            let v = item.checkList
-            param.value[item.key] = item.type == 'number' ? v.join("") ? +v.join("") : 0 : v.join("")
-        }
-    })
-    show.value = false
-    getData()
-}
+// const handleConfirm = () => {
+//     list.value = []
+//     pageIndex.value = 1
+//     let keys = ['productName', 'level']
+//     filterData.value.forEach(item => {
+//         if (keys.includes(item.key)) {
+//             let v = item.checkList
+//             param.value[item.key] = item.type == 'number' ? v.join("") ? +v.join("") : 0 : v.join("")
+//         }
+//     })
+//     show.value = false
+//     getData()
+// }
+// const handleReset = () => {
+//     list.value = []
+//     pageIndex.value = 1
+//     let keys = ['productName', 'level']
+//     filterData.value.forEach(item => {
+//         item.checkList = []
+//         if (keys.includes(item.key)) {
+//             let v = item.checkList
+//             param.value[item.key] = item.type == 'number' ? v.join("") ? +v.join("") : 0 : v.join("")
+//         }
+//     })
+//     show.value = false
+//     getData()
+// }
 </script>
 
 <style lang="less" scoped>
@@ -349,9 +428,11 @@ const handleReset = () => {
             font-size: 28rpx;
             align-items: center;
             justify-content: space-between;
+
             .item {
                 display: flex;
             }
+
             .size-name {
                 color: #12151b;
             }

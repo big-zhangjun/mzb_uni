@@ -135,7 +135,7 @@ onShow(() => {
     getBlogList()
 })
 onReachBottom(() => {
-    if (pageIndex.value >= totalPage.value) return
+     
     pageIndex.value++
     getBlogList()
 })

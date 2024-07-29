@@ -25,6 +25,27 @@
                 </view>
                 <text class="txt">统计报表</text>
             </view>
+            <!-- <view class="menu-item" @click="goMaterial">
+                <view class="icon">
+                    <image class="img" mode="aspectFill" src="../../../static/menu/order.png" alt=""></image>
+                </view>
+                <text class="txt">缺料报备</text>
+            </view> -->
+        </view>
+        <view class="pic-menu">
+            <view class="pic-menu-item"  @click="goMaterial">
+                <text>缺料报备</text>
+                <view class="icon">
+                    <image class="img" mode="aspectFill" src="../../../static/menu/rl.png" alt=""></image>
+                </view>
+
+            </view>
+            <view class="pic-menu-item red"  @click="goMarkdown">
+                <text>备忘录</text>
+                <view class="icon bwl">
+                    <image class="img" mode="aspectFill" src="../../../static/menu/bwl.png" alt=""></image>
+                </view>
+            </view>
         </view>
     </view>
 </template>
@@ -113,6 +134,19 @@ const goStatistics = () => {
         url: `/pages/Chart/index`
     })
 }
+const goMaterial = () => {
+    SubscriptionMessage()
+    uni.navigateTo({
+        url: `/subpkg1/pages/Material/index`
+
+    })
+}
+const goMarkdown = () => {
+    SubscriptionMessage()
+    uni.navigateTo({
+        url: `/subpkg1/pages/Product/components/memorandums`
+    })
+}
 </script>
 
 <style lang="less" scoped>
@@ -128,30 +162,32 @@ const goStatistics = () => {
     border-radius: 20rpx;
     margin: 0 auto;
     box-sizing: border-box;
-    padding: 60rpx 32rpx;
+    padding: 32rpx 22rpx;
     display: flex;
     justify-content: space-between;
+    flex-wrap: wrap;
 
     .menu-item {
         display: flex;
+        width: 20%;
         flex-direction: column;
-        font-size: 28rpx;
+        font-size: 24rpx;
         align-items: center;
         color: rgb(64, 62, 64);
 
         .icon {
-            width: 88rpx;
-            height: 88rpx;
+            width: 78rpx;
+            height: 78rpx;
             background: linear-gradient(160deg, rgb(62, 161, 253) 0%, rgb(55, 133, 250) 100%);
-            border-radius: 88rpx;
+            border-radius: 78rpx;
             margin-bottom: 18rpx;
             display: flex;
             align-items: center;
             justify-content: center;
 
             .img {
-                width: 52rpx;
-                height: 52rpx;
+                width: 42rpx;
+                height: 42rpx;
             }
         }
 
@@ -178,6 +214,82 @@ const goStatistics = () => {
             }
         }
 
+    }
+
+}
+
+.pic-menu {
+    display: flex;
+    background-color: #fff;
+    width: calc(100vw - 48rpx);
+    margin: 0 auto;
+    box-sizing: border-box;
+    padding: 24rpx 10rpx;
+    border-radius: 12rpx;
+    margin-top: 24rpx;
+
+    .pic-menu-item {
+        width: calc(50% - 28rpx);
+        background: linear-gradient(to right, #fdf6ee, #fcf1df);
+        margin: 0 14rpx;
+        box-sizing: border-box;
+        padding: 0 24rpx;
+        height: 108rpx;
+        border-radius: 12rpx;
+        font-weight: bold;
+        font-size: 26rpx;
+        display: flex;
+        padding-top: 24rpx;
+        padding-right: 0;
+        justify-content: space-between;
+        position: relative;
+
+        .img {
+            // width: 42rpx;
+            width: 60rpx;
+            height: 60rpx;
+            position: absolute;
+            right: 24rpx;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+    }
+
+    .icon {
+        width: 108rpx;
+        height: 108rpx;
+        position: absolute;
+        right: 0;
+        top: 0;
+
+        &::before {
+            content: "";
+            background: url("../../../static/menu/rl.png") no-repeat;
+            background-size: contain;
+            width: 100%;
+            height: 100%;
+            opacity: .2;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+    }
+
+    .red {
+        background: linear-gradient(to right, rgb(255, 241, 238), rgb(255, 207, 197));
+    }
+    .bwl {
+        &::before {
+            content: "";
+            background: url("../../../static/menu/bwl.png") no-repeat;
+            background-size: contain;
+            width: 100%;
+            height: 100%;
+            opacity: .2;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
     }
 }
 </style>

@@ -122,6 +122,54 @@
 					"style": {
 						"navigationBarTitleText": "日志统计"
 					}
+				},
+				{
+					"path": "pages/Material/index",
+					"style": {
+						"navigationBarTitleText": "缺料报备"
+					}
+				},
+				{
+					"path": "pages/Material/detail",
+					"style": {
+						"navigationBarTitleText": "缺料详情"
+					}
+				},
+				{
+					"path": "pages/Material/shot",
+					"style": {
+						"navigationBarTitleText": "缺料信息"
+					}
+				},
+				{
+					"path": "pages/Material/tree",
+					"style": {
+						"navigationBarTitleText": "缺料报备"
+					}
+				},
+				{
+					"path": "pages/Material/addMaterial",
+					"style": {
+						"navigationBarTitleText": "缺料报备"
+					}
+				},
+				{
+					"path": "pages/Product/index",
+					"style": {
+						"navigationBarTitleText": "项目信息"
+					}
+				},
+				{
+					"path": "pages/Product/components/memorandums",
+					"style": {
+						"navigationBarTitleText": "备忘录"
+					}
+				},
+				{
+					"path": "pages/Product/memorandoums",
+					"style": {
+						"navigationBarTitleText": "备忘录"
+					}
 				}
 			]
 		}

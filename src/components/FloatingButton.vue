@@ -1,13 +1,8 @@
 <template>
-  <view
-    class="floating-button"
-    :style="{ top: top + 'px', left: left + 'px' }"
-    @touchstart="handleTouchStart"
-    @touchmove.prevent="handleTouchMove"
-    @touchend="handleTouchEnd"
-    @click="handleClick"
-  >
-    <button>复</button>
+  <view class="floating-button" :style="{ top: top + 'px', left: left + 'px' }" @touchstart="handleTouchStart"
+    @touchmove.prevent="handleTouchMove" @touchend="handleTouchEnd" @click="handleClick">
+    <button v-if="type !== 'add'">复</button>
+    <image v-else class="img" mode="aspectFill" src="../../static/images/add.png" alt=""></image>
   </view>
 </template>
 
@@ -20,7 +15,7 @@ const startX = ref(0);
 const startY = ref(0);
 const isDragging = ref(false);
 const emit = defineEmits(['handleClick']);
-
+const props = defineProps(["type"]);
 const setInitialPosition = () => {
   const { windowHeight, windowWidth } = uni.getSystemInfoSync();
   top.value = windowHeight - 300; // 30px 上边距 + 50px 按钮高度
@@ -57,10 +52,25 @@ onMounted(() => {
 
 <style scoped>
 .floating-button {
-  position: absolute;
+  position: fixed;
   z-index: 1000;
-  touch-action: none; /* 确保在拖拽时禁用默认的滚动行为 */
+  touch-action: none;
+  display: flex;
+  align-items: center;
+  background-color: rgb(69, 96, 225);
+  justify-content: center;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  box-shadow: 5rpx 5rpx 25rpx rgb(0, 0, 0, 0.2);
+  /* 确保在拖拽时禁用默认的滚动行为 */
 }
+
+.img {
+  width: 50rpx;
+  height: 50rpx;
+}
+
 button {
   width: 50px;
   height: 50px;
@@ -68,6 +78,5 @@ button {
   color: #fff;
   border-radius: 50%;
   border: none;
-  box-shadow: 5rpx 5rpx 25rpx rgb(0,0,0,0.2);
 }
 </style>

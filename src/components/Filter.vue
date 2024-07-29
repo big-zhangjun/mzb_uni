@@ -58,7 +58,8 @@ const handleReset = () => {
     width: 75vw;
     box-sizing: border-box;
     padding: 24rpx;
-
+    max-height: 100vh;
+    overflow-y: auto;
     .label {
         font-weight: bold;
         font-size: 32rpx;

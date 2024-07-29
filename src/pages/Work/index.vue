@@ -99,9 +99,9 @@ const filterData = ref([
     }
 ])
 const show = ref(false)
-const disabled = ref(false)
 const totalPage = ref(0)
 const pageIndex = ref(1)
+const disabled = ref(false)
 const userList = ref([])
 const deptList = ref([])
 const form = ref({
@@ -125,7 +125,7 @@ const debounce = (func, delay) => {
     };
 };
 onReachBottom(() => {
-    if (pageIndex.value >= totalPage.value) return
+     
     pageIndex.value++
     getData()
 })

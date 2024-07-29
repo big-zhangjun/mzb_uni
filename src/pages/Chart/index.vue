@@ -338,7 +338,8 @@ const getLogOptions = async () => {
     let params = {
         year,
         month: month.value,
-        deptID: 51
+        deptID: 51,
+        resign: 2
     }
     let res = await $http.post("/statistics/blog_count", params)
     getLogLineOption(res.data)
