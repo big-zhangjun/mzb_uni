@@ -11,6 +11,8 @@
         <view class="card" v-for="item in list" :key="item.id" @click="goDetail(item)" v-if="list.length">
             <view class="header">
                 <view class="title">{{ item.customerName || "通用耗材领料" }}</view>
+                <up-icon name="lock" color="#2979ff" size="24" v-if="item.locked == 2"></up-icon>
+                <up-icon name="lock-fill" color="#2979ff" size="24" v-if="item.locked == 1"></up-icon>
                 <!-- <view class="level" :class="getColor(item.level)">P{{ item.level }}</view> -->
             </view>
             <view class="content">
@@ -154,23 +156,23 @@ const getUserInfo = async () => {
             deptList.value = deptRes.data
             disabled.value = false
             userList.value = []
-            form.value.applyDeptID = undefined
-            form.value.applyUserID = undefined
+            // form.value.applyDeptID = undefined
+            // form.value.applyUserID = undefined
             break;
         case 1:
-            deptList.value = deptRes.data.filter(item => item.id == res.data.applyDeptID)
-            let userRess = await $http.post('/user/get_user_list2', { deptID: res.data.applyDeptID })
+            deptList.value = deptRes.data.filter(item => item.id == res.data.deptID)
+            let userRess = await $http.post('/user/get_user_list2', { deptID: res.data.deptID })
             userList.value = userRess.data
             disabled.value = false
-            form.value.applyDeptID = res.data.applyDeptID
-            form.value.applyUserID = res.data.id
+            // form.value.applyDeptID = res.data.applyDeptID
+            // form.value.applyUserID = res.data.id
             break
         case 2:
-            deptList.value = deptRes.data.filter(item => item.id == res.data.applyDeptID)
-            form.value.applyDeptID = res.data.applyDeptID
-            let userRes = await $http.post('/user/get_user_list2', { deptID: res.data.applyDeptID })
+            deptList.value = deptRes.data.filter(item => item.id == res.data.deptID)
+            form.value.applyDeptID = res.data.deptID
+            let userRes = await $http.post('/user/get_user_list2', { deptID: res.data.deptID })
             userList.value = userRes.data
-            form.value.applyUserID = res.data.id
+            // form.value.applyUserID = res.data.id
             disabled.value = true
             break
         // userList.value = userRes.data.data
@@ -179,7 +181,7 @@ const getUserInfo = async () => {
     getFilterData('applyUserID', userList.value, 'userName', 'id')
 }
 const handleCheck = async ({ data, value }) => {
-    if(data.key == "resign") {
+    if (data.key == "resign") {
         resign.value = value.id
         let userRes = await $http.post('/user/get_user_list2', { deptID: deptID.value, resign: resign.value })
         form.value.applyUserID = undefined
@@ -195,7 +197,7 @@ const handleCheck = async ({ data, value }) => {
         userList.value = userRes.data
         getFilterData('applyUserID', userList.value, 'userName', 'id')
     }
-    
+
 }
 const handleConfirm = () => {
     pageIndex.value = 1
@@ -238,7 +240,8 @@ const handleReset = () => {
 }
 const totalPage = ref(1)
 onReachBottom(() => {
-
+    console.log(totalPage.value , pageIndex.value);
+    if(totalPage.value <= pageIndex.value) return
     pageIndex.value++
     getData()
 })
@@ -248,14 +251,12 @@ const goDetail = (data) => {
         url: `/subpkg1/pages/Material/detail?id=${data.id}&number=${data.number}`
     })
 }
-getUserInfo().then(() => {
-    list.value = []
-    getData()
-})
+
 onShow(() => {
     authority.value = uni.getStorageSync("authority").filter(item => item.moduleID == 16).map(item => item.operateID);
     list.value = []
     getData()
+    getUserInfo()
 })
 const getData = () => {
     let params = {
@@ -264,7 +265,7 @@ const getData = () => {
         pageSize: 10,
         productName: param.value.productName,
         pageIndex: pageIndex.value,
-        applyDeptID: +form.value.applyDeptID,
+        applyDeptID: +form.value.applyDeptID || 0,
         applyUserID: +form.value.applyUserID,
     }
     $http.post("/shotage/get_shotage_list", params).then(res => {
@@ -334,6 +335,7 @@ const handleEnter = () => {
     padding-top: 24rpx;
     align-items: center;
     display: flex;
+    z-index: 100;
     background-color: #fff;
     border-bottom: 24rpx solid #f1f1f1;
 

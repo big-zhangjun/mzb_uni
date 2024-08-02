@@ -4,19 +4,19 @@
             <view class="header">
                 <view class="title">缺料信息</view>
                 <up-icon name="lock" color="#2979ff" size="24" v-if="detail.locked == 2"></up-icon>
-                <up-icon name="lock-fill" color="#2979ff" size="24"  v-if="detail.locked == 1"></up-icon>
+                <up-icon name="lock-fill" color="#2979ff" size="24" v-if="detail.locked == 1"></up-icon>
                 <view class="edit" @click="handleEdit">编辑</view>
                 <view class="del" @click="del" v-if="authority.includes(2)">删除</view>
             </view>
-            <view class="item">
+            <view class="item" v-if="detail.productNumber">
                 <view class="label">产品编号：</view>
                 <view class="value">{{ detail.productNumber }}</view>
             </view>
-            <view class="item">
+            <view class="item" v-if="detail.model">
                 <view class="label">型号：</view>
                 <view class="model">{{ detail.model }}</view>
             </view>
-            <view class="item">
+            <view class="item" v-if="detail.customerName">
                 <view class="label">客户名称：</view>
                 <view class="value">{{ detail.customerName }}</view>
             </view>
@@ -40,6 +40,10 @@
                 <view class="label">完整率：</view>
                 <view class="value">{{ getProgress(detail.progress) }}</view>
             </view>
+            <view class="item">
+                <view class="label">备注：</view>
+                <view class="value">{{ detail.remark || '--'}}</view>
+            </view>
         </view>
         <view class="card">
             <view class="header">
@@ -47,7 +51,10 @@
             </view>
             <view class="list-item" v-for="item in shotList" :key="item.id">
                 <view class="info">
-                    <view class="title">{{ item.materialName }}</view>
+                    <view class="title">
+                        <view class="name">{{ item.materialName }} </view>
+                        <view class="amount">（{{ item.amount }}）</view>
+                    </view>
                     <view class="model">{{ item.materialModel }}</view>
                 </view>
                 <view class="look" @click="handleLook(item)">去查看</view>
@@ -96,9 +103,9 @@ const getProgress = (v) => {
     // }
 }
 const del = () => {
-    if(detail.value.locked == 1) {
+    if (detail.value.locked == 1) {
         uni.showToast({
-            title:"该数据已经锁定，不允许删除",
+            title: "该数据已经锁定，不允许删除",
             icon: "none"
         })
         return
@@ -123,6 +130,14 @@ const del = () => {
     })
 }
 const handleAddShot = () => {
+    if (detail.value.locked == 1) {
+        uni.showToast({
+            title: "该数据已经锁定，不允许新增",
+            icon: "none"
+        })
+        return
+    }
+    uni.setStorageSync("shopList", [])
     uni.navigateTo({
         url: `/subpkg1/pages/Material/tree?id=${detail.value.id}`
     })
@@ -223,6 +238,11 @@ const handleEdit = () => {
 
             .title {
                 font-weight: bold;
+                display: flex;
+                .amount {
+                    margin-left: 20rpx;
+                    font-weight: normal;
+                }
             }
 
             .info {

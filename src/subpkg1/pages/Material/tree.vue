@@ -7,23 +7,32 @@
     </view>
     <view class="pages">
         <view class="router">
-            <view class="title" @click="handleRoute(item, idx)" :class="{ active: parentID !== item.id }"
-                v-for="(item, idx) in routeList" :key="item.id">
+            <view class="left">
+                <view class="title" @click="handleRoute(item, idx)" :class="{ active: parentID !== item.id }"
+                    v-for="(item, idx) in routeList" :key="item.id">
+                    <view class="text">{{ item.groupName }}</view>
+                    <up-icon name="arrow-right" v-if="routeList.length - 1 !== idx"></up-icon>
+                </view>
+            </view>
+            <view class="right" @click="upOrDown = !upOrDown">
+                <up-icon name="arrow-down" v-if="!upOrDown"></up-icon>
+                <up-icon name="arrow-up" v-else></up-icon>
+            </view>
+        </view>
+        <view class="cus" :class="{ upOrDown }">
+            <view class="item" @click="handleTree(item)" :class="{ active: parentID == item.id }"
+                v-for="item in treeList" :key="item.id">
+                <view class="icon">
+                    <up-icon size="20" name="plus-square-fill" color="rgb(91, 166, 250)"></up-icon>
+                </view>
                 <view class="text">{{ item.groupName }}</view>
-                <up-icon name="arrow-right" v-if="routeList.length - 1 !== idx"></up-icon>
+                <up-icon name="arrow-right"></up-icon>
             </view>
         </view>
-        <view class="item" @click="handleTree(item)" :class="{ active: parentID == item.id }" v-for="item in treeList"
-            :key="item.id">
-            <view class="icon">
-                <up-icon size="20" name="plus-square-fill" color="rgb(91, 166, 250)"></up-icon>
-            </view>
-            <view class="text">{{ item.groupName }}</view>
-            <up-icon name="arrow-right"></up-icon>
-        </view>
-        <view class="line" v-show="treeList.length"></view>
-        <view class="radio-item" v-for="item in materialList" :key="item.code" @click="handleCheck(item)">
-            <view class="radio" :class="{ check: materialID == item.id }"></view>
+
+        <view class="line" v-show="treeList.length" v-if="upOrDown"></view>
+        <view class="radio-item" v-for="item in materialList" :key="item.code">
+            <!-- <view class="radio" :class="{ check: checkIdsList.includes(item.id) }"></view> -->
             <view class="info">
                 <view class="it">
                     <view class="label">{{ item.materialName }}</view>
@@ -34,18 +43,30 @@
                     <view class="value">{{ item.unit }}</view>
                 </view>
             </view>
+            <view class="addOrRedu">
+                <view class="redu" @click="handleDel(item)">-</view>
+                <view class="num">{{ getNum(item.id) }}</view>
+                <view class="add" @click="handleAdd($event, item)">
+                    <view class="text">+</view>
+                </view>
+            </view>
         </view>
         <view class="footer">
-            <view class="submit" @click="handleSubmit">确定</view>
+            <view class="cart" @click="handleGoShopCart">
+                <view class="num">{{ shopList.length }}</view>
+                <image class="cart-img" width="160" height="160" mode="aspectFill" src="../../../static/images/pack.png"
+                    alt=""></image>
+            </view>
+            <view class="submit" @click="handleSubmit">添加</view>
         </view>
     </view>
-
+    <!-- <view class="bar" :style="{ left: targetX + 'rpx', top: targetY + 'rpx' }" ref="barA"></view> -->
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import * as $http from '../../../request/index'
-import { onLoad, onReachBottom } from '@dcloudio/uni-app';
+import { onLoad, onReachBottom, onShow } from '@dcloudio/uni-app';
 const debounce = (func, delay) => {
     let timeoutId;
 
@@ -59,35 +80,30 @@ const debounce = (func, delay) => {
         }, delay);
     };
 };
+const targetX = ref(750)
+const targetY = ref(1000)
 const routeList = ref([
     {
         id: 0,
         groupName: "全部",
         code: "",
     },
-    {
-        id: 4,
-        groupName: "原材料",
-        code: "04"
-    },
-    {
-        id: 699,
-        code: "0403",
-        groupName: "电气类"
-    }
 ])
+const barA = ref(null)
+const upOrDown = ref(false)
 const totalPage = ref(0)
 const MaterialModel = ref("")
 const materialName = ref("")
 const pageIndex = ref(1)
-const code = ref("0403")
+const code = ref("")
 const shotageID = ref("")
-const groupID = ref(699)
-const parentID = ref(699)
+const groupID = ref(0)
+const parentID = ref(0)
 const treeList = ref([])
 const materialList = ref([])
 const materialID = ref("")
 const materialData = ref({})
+const shopList = ref([])
 const handleSearch = debounce(() => {
     handleEnter()
 }, 300); // 设置防抖延迟时间，单位为毫秒
@@ -103,13 +119,25 @@ const getGroupShotList = () => {
 }
 onReachBottom(() => {
     //  
+    console.log(totalPage.value, pageIndex.value);
+    if (totalPage.value <= pageIndex.value) return
     pageIndex.value++
     getMaerialList()
+})
+const checkIdsList = computed(() => {
+    // if (shopList.value) {
+    return shopList.value.map(item => item.id)
+    // } else {
+    //     return []
+    // }
 })
 const handleEnter = () => {
     materialList.value = []
     pageIndex.value = 1
     getMaerialList()
+}
+const getNum = (v) => {
+    return shopList.value.filter(item => item.id == v).length
 }
 const handleTree = (data) => {
     parentID.value = data.id
@@ -126,9 +154,28 @@ const handleRoute = (data, idx) => {
     getGroupShotList()
 
 }
-const handleCheck = (data) => {
+const handleDel = (data) => {
+    console.log(data);
+    let index = shopList.value.findIndex(item => item.id == data.id)
+    if (index != -1) {
+        shopList.value.splice(index, 1)
+    }
+    uni.setStorageSync("shopList", shopList.value)
+}
+const handleAdd = ($event, data) => {
+    console.log($event);
+    let x = $event.target.x
+    let y = $event.target.y
+    targetY.value = y
+    targetX.value = x
+    createBall02(x, y)
     materialID.value = data.id
     materialData.value = data
+    shopList.value.push({
+        ...materialData.value,
+        shotageID: +shotageID.value
+    })
+    uni.setStorageSync("shopList", shopList.value)
 }
 const getMaerialList = () => {
     let params = {
@@ -140,26 +187,49 @@ const getMaerialList = () => {
         pageSize: 10
     }
     $http.post("/shotage/get_material_list", params).then(res => {
-        totalPage.value = res.data.totalCount
+        totalPage.value = res.data.totalPage
         materialList.value = [...materialList.value, ...res.data.records]
     })
 
 }
+const handleGoShopCart = () => {
+    uni.navigateTo({
+        url: `/subpkg1/pages/Material/shopCart?shotageID=${shotageID.value}`
+    })
+}
+const groupById = (array) => {
+    return array.reduce((acc, item) => {
+        // 如果累加器中没有这个id，创建一个新的数组
+        if (!acc[item.id]) {
+            acc[item.id] = [];
+        }
+        // 将当前项目推入对应id的数组中
+        acc[item.id].push(item);
+        return acc;
+    }, {});
+};
 const handleSubmit = () => {
-    if (!materialID.value) {
+    // shopList.value
+    if (!shopList.value.length) {
         uni.showToast({
             title: "请选择数据",
             icon: "none"
         })
         return
     }
-    handleAddMaterial()
+    const groupList = Object.values(groupById(shopList.value));
+    console.log(groupList);
+    groupList.forEach(async item => {
+        await handleAddMaterial(item[0], item.length)
+    })
+    getMaterialShotList()
 }
-const handleAddMaterial = () => {
+const handleAddMaterial = (data, amount) => {
     let params = {
-        materialID: +materialID.value,
-        unit: materialData.value.unit,
-        shotageID: +shotageID.value
+        materialID: +data.id,
+        unit: data.unit,
+        shotageID: +shotageID.value,
+        amount
     }
     $http.post("/shotage/add_material_shot_info", params).then(res => {
         if (res.status.retCode == 0) {
@@ -167,7 +237,6 @@ const handleAddMaterial = () => {
                 title: "操作成功",
                 icon: "none"
             })
-            getMaterialShotList()
         }
     }).catch(err => {
         uni.showToast({
@@ -203,9 +272,45 @@ const updateShotageInfo = (params) => {
         uni.$u.toast(err.status.msg)
     })
 }
+
+const createBall02 = (x, y) => {
+    console.log(barA.value, 'ss');
+    return
+    const bar = document.createElement('div')
+    bar.style.position = 'absolute'
+    bar.style.left = '0'
+    bar.style.top = '0'
+    bar.style.width = '0.533333rem'
+    bar.style.height = '0.533333rem'
+    bar.style.borderRadius = '50%'
+    bar.style.backgroundColor = '#02b6fd'
+    // transform
+    bar.style.transform = 'translate(' + x + 'px,' + y + 'px)'
+    bar.style.transition = 'transform .5s linear'
+
+
+    document.body.appendChild(bar)
+    // 添加动画属性
+    setTimeout(() => {
+        let target = document.querySelector('.ele_car_icon')
+        let targetX = (target.offsetLeft + target.offsetWidth / 2)
+        let targetY = (target.offsetTop)
+        bar.style.transform = 'translate(' + targetX + 'px,' + targetY + 'px)'
+    }, 0);
+
+    /**
+     * 动画结束后，删除自己
+     */
+    bar.ontransitionend = function () {
+        this.remove()
+    }
+}
 onLoad((options) => {
     shotageID.value = options.id
     getGroupShotList()
+})
+onShow(() => {
+    shopList.value = uni.getStorageSync("shopList") || []
 })
 </script>
 
@@ -235,7 +340,6 @@ onLoad((options) => {
 }
 
 .pages {
-    margin-top: 24rpx;
     padding-bottom: 190rpx;
 
     .item {
@@ -272,7 +376,22 @@ onLoad((options) => {
         gap: 12rpx;
         padding: 0 24rpx;
         padding-bottom: 24rpx;
+        padding-top: 24rpx;
         overflow-x: auto;
+        position: relative;
+        justify-content: space-between;
+        .left {
+            flex: 1;
+            display: flex;
+                align-items: center;
+        }
+        .right {
+            width: 60rpx;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
 
         .title {
             display: flex;
@@ -296,7 +415,6 @@ onLoad((options) => {
         box-sizing: border-box;
         width: calc(100vw - 56rpx);
         margin: 0 auto;
-        display: flex;
         margin-top: 30rpx;
         align-items: center;
 
@@ -340,6 +458,28 @@ onLoad((options) => {
                 }
             }
         }
+
+        .addOrRedu {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            margin-top: 36rpx;
+
+            .redu,
+            .add {
+                border: solid #5ca6fb 1rpx;
+                border-radius: 8rpx;
+                width: 60rpx;
+                line-height: 60rpx;
+                text-align: center;
+                position: relative;
+            }
+
+            .num {
+                font-size: 26rpx;
+                margin: 0 30rpx;
+            }
+        }
     }
 
     .active {
@@ -353,14 +493,17 @@ onLoad((options) => {
         width: 100%;
         left: 0;
         display: flex;
+        padding: 0 30rpx;
         align-items: center;
-        justify-content: center;
+        box-sizing: border-box;
+        justify-content: space-between;
         background-color: #fff;
         box-shadow: 0 -8rpx 24rpx rgba(0, 0, 0, 0.05);
+        padding-left: 0;
 
         .submit {
-            width: calc(100% - 60rpx);
             height: 98rpx;
+            flex: 1;
             background-color: rgb(92, 166, 251);
             border-radius: 12rpx;
             color: #fff;
@@ -368,6 +511,51 @@ onLoad((options) => {
             align-items: center;
             justify-content: center;
         }
+
+        .cart {
+            width: 128rpx;
+            height: 128rpx;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+
+            .num {
+                background-color: red;
+                position: absolute;
+                right: 22rpx;
+                top: 30rpx;
+                color: #fff;
+                padding: 4rpx 12rpx;
+                border-radius: 30rpx;
+                ;
+                font-size: 20rpx;
+            }
+
+            .cart-img {
+                width: 60rpx;
+                height: 60rpx;
+            }
+        }
     }
+}
+
+.bar {
+    position: absolute;
+    width: 30rpx;
+    height: 30rpx;
+    background-color: rgb(92, 166, 251);
+    border-radius: 50%;
+    transition: .5s linear;
+    z-index: 120;
+}
+
+.cus {
+    height: 0;
+    overflow: hidden;
+}
+
+.upOrDown {
+    height: auto;
 }
 </style>

@@ -130,6 +130,12 @@
 					}
 				},
 				{
+					"path": "pages/Material/shopCart",
+					"style": {
+						"navigationBarTitleText": "选择列表"
+					}
+				},
+				{
 					"path": "pages/Material/detail",
 					"style": {
 						"navigationBarTitleText": "缺料详情"

@@ -127,6 +127,11 @@ const form = ref([
             value: 0,
             disabled: true
         },
+        {
+            label: "备注",
+            key: "remark",
+            value: "",
+        },
     ],
 ]);
 const debounce = (func, delay) => {

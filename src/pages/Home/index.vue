@@ -42,6 +42,29 @@ onShow(() => {
             },
         });
     }
+    const updateManager = uni.getUpdateManager()
+    // 请求完新版本信息的回调
+    updateManager.onCheckForUpdate(res => {
+        if (res.hasUpdate) {
+            // 新版本下载成功
+            updateManager.onUpdateReady(() => {
+                uni.showModal({
+                    title: '更新提示',
+                    content: '新版本已经准备好，点击确定重启小程序',
+                    success(res) {
+                        if (res.confirm) {
+                            // 新的版本已经下载好，强制更新
+                            updateManager.applyUpdate()
+                        }
+                    }
+                })
+            })
+        }
+    })
+    // 新版本下载失败
+    updateManager.onUpdateFailed(res => {
+        console.error(res)
+    })
 })
 const productList = ref([])
 const param = ref({
@@ -49,8 +72,8 @@ const param = ref({
     productName: ''
 })
 wx.showShareMenu({
-  withShareTicket: true,
-  menus: ['shareAppMessage', 'shareTimeline']
+    withShareTicket: true,
+    menus: ['shareAppMessage', 'shareTimeline']
 })
 const debounce = (func, delay) => {
     let timeoutId;
@@ -120,9 +143,9 @@ const open = () => {
 }
 const getAuthority = async () => {
     let roleId = uni.getStorageSync("user").roleID
-    let res = await $http.post("/auth/get_authority_operate", {roleId})
+    let res = await $http.post("/auth/get_authority_operate", { roleId })
     uni.setStorageSync("authority", res.data)
-    console.log(res,'ssf');
+    console.log(res, 'ssf');
 }
 getAuthority()
 const getData = () => {

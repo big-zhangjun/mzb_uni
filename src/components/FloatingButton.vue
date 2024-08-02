@@ -9,8 +9,8 @@
 <script setup>
 import { ref, onMounted, defineEmits } from 'vue';
 
-const top = ref(0);
-const left = ref(0);
+const top = ref(-1000);
+const left = ref(-1000);
 const startX = ref(0);
 const startY = ref(0);
 const isDragging = ref(false);

@@ -209,10 +209,12 @@ const handleAdd = () => {
 // 查询工作流程
 const getFlowList = async (v) => {
     let params = {
-        projectID: detail.value.id
+        hostID: detail.value.id,
+        pageIndex: 1,
+        pageSize: 1000
     }
     const res = await $http.post("/flow/get_flow_list", params)
-    flowList.value = res.data
+    flowList.value = res.data.records
     console.log(res, 'afdsad');
 }
 // // 新增工作流程
