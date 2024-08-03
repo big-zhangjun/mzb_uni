@@ -53,21 +53,26 @@
                 <view class="info">
                     <view class="title">
                         <view class="name">{{ item.materialName }} </view>
-                        <view class="amount">（{{ item.amount }}）</view>
+                       
                     </view>
                     <view class="model">{{ item.materialModel }}</view>
+                    <view class="num">
+                        <view class="amount">总数（{{ item.amount }}）</view>
+                        <view class="amount">签收数量（{{ item.ready }}）</view>
+                    </view>
                 </view>
                 <view class="look" @click="handleLook(item)">去查看</view>
             </view>
-            <view class="add" @click="handleAddShot">+新增</view>
+            <!-- <view class="add" @click="handleAddShot">+新增</view> -->
         </view>
-
+        <FloatingButton @handleClick="handleAddShot" :type="'add'"></FloatingButton>
     </view>
 </template>
 
 <script setup>
 import { ref } from 'vue';
 import * as $http from '../../../request/index'
+import FloatingButton from '../../../components/FloatingButton.vue';
 // import FloatingButton from '../../../components/FloatingButton.vue';
 import { onLoad, onShow } from '@dcloudio/uni-app';
 const detail = ref("")
@@ -247,6 +252,10 @@ const handleEdit = () => {
 
             .info {
                 flex: 1;
+            }
+            .num{
+                display: flex;
+                margin-top: 20rpx;
             }
 
             .model {

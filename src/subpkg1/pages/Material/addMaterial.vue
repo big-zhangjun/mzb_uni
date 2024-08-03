@@ -9,7 +9,7 @@
                         <view class="label" :class="{ required: formData.required }">{{ formData.label }}：</view>
                         <view class="value">
                             <input type="text" minlength="6" :disabled="formData.disabled" v-model="formData.value"
-                                placeholder="请输入" v-if="!formData.type">
+                                :placeholder="formData.placeholder || '请输入'" v-if="!formData.type">
                             <view v-if="formData.type == 'select'"
                                 @click="handleProductCheck(formData.value, formData.type, { idx, index }, formData.key)">
                                 {{
@@ -34,7 +34,7 @@
                 <input type="text" v-model="customerName" class="customerName" placeholder="请输入客户名称"
                     @input="handleSearch">
                 <view class="content">
-                    <view class="list">
+                    <scroll-view class="list" scroll-y="true" @scrolltolower="scrolltolower">
                         <view class="item" :class="{ active: projectID == item.id }" @click="handleCheckProduct(item)"
                             v-for="(item) in projectList" :key="item.id">
                             <view class="header">
@@ -45,7 +45,7 @@
                                 <view class="date"> {{ item.orderDate }}</view>
                             </view>
                         </view>
-                    </view>
+                    </scroll-view>
                     <view class="add" @click="handleAdd">新增</view>
                 </view>
             </view>
@@ -117,7 +117,7 @@ const form = ref([
         {
             label: "来源",
             key: "source",
-            value: "",
+            value: "项目现场安装",
             required: true,
             type: "select"
         },
@@ -130,7 +130,9 @@ const form = ref([
         {
             label: "备注",
             key: "remark",
+            required: true,
             value: "",
+            placeholder: "请填入收货地址，收货人"
         },
     ],
 ]);
@@ -151,6 +153,7 @@ const dateType = ref("")
 const customerName = ref("")
 const formOptions = ref("")
 const data = ref({})
+const pageIndex = ref(1)
 const projectDetail = ref({})
 onLoad((options) => {
     formOptions.value = options
@@ -173,18 +176,32 @@ const handleProjectConfirm = () => {
             if (["materialName"].includes(_item.key)) {
                 _item.value = projectDetail.value.label
             }
+            console.log(projectDetail.value.id);
 
+            if (projectDetail.value.id == -1) {
+                if (["remark"].includes(_item.key)) {
+                    _item.required = false
+                }
+            } else {
+                if (["remark"].includes(_item.key)) {
+                    _item.required = true
+                }
+            }
         })
     })
+}
+const scrolltolower = async () => {
+    pageIndex.value++
+    getProjectList()
 }
 const getProjectList = async () => {
     const params = {
         customerName: customerName.value,
-        pageIndex: 1,
-        pageSize: 1000
+        pageIndex: pageIndex.value,
+        pageSize: 10
     }
     const res = await $http.post("/project/get_project_list", params)
-    projectList.value = res.data.records.map(item => {
+    let result = res.data.records.map(item => {
         return {
             id: item.id,
             label: item.customerName + item.model,
@@ -192,7 +209,11 @@ const getProjectList = async () => {
             productNumber: item.productNumber
         }
     })
-    projectList.value = [{id: -1, label: "通用耗材领料", orderDate: "",productNumber: ""}, ...projectList.value]
+    if (!projectList.value[0]) {
+        projectList.value = [{ id: -1, label: "通用耗材领料", orderDate: "", productNumber: "" }, ...result]
+    } else {
+        projectList.value = [...projectList.value, ...result]
+    }
 }
 const handleDateConfirm = (v) => {
     let { idx, index } = dateType.value
@@ -200,6 +221,8 @@ const handleDateConfirm = (v) => {
     dateStatus.value = false
 }
 const handleSearch = debounce(() => {
+    pageIndex.value = 1
+    projectList.value = []
     getProjectList()
     // 处理搜索逻辑
 }, 300);
@@ -550,11 +573,14 @@ const updateShotageInfo = (params) => {
         background-color: #fff;
         margin-top: 30rpx;
         border-radius: 12rpx;
-        height: 60vh;
         overflow: hidden;
         box-sizing: border-box;
         padding: 30rpx;
         overflow-y: scroll;
+    }
+
+    .list {
+        height: 60vh;
     }
 
     .add {

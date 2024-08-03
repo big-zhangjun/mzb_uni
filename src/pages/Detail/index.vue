@@ -99,6 +99,10 @@
                 <image class="img" mode="aspectFill" src="../../static/images/add.png" alt=""></image>
             </view>
         </view>
+        <!-- 文件 -->
+        <view class="floder" v-show="current == 3">
+            <floder :detail="detail"/>
+        </view>
     </view>
 </template>
 
@@ -107,7 +111,9 @@ import { reactive, ref, watch } from 'vue';
 import * as $http from '../../request/index'
 import { onLoad, onReachBottom, onShow } from '@dcloudio/uni-app';
 import collapse from './components/collapse.vue';
-const current = ref(0)
+import floder from './components/floder.vue';
+
+const current = ref(3)
 const data = ref(null)
 const detail = ref({})
 const flowList = ref([])
@@ -115,7 +121,8 @@ const blogList = ref([])
 const list1 = reactive([
     { name: '详细信息' },
     { name: '电气流程' },
-    { name: '工作日志' }
+    { name: '工作日志' },
+    { name: '文件详情' },
 ]);
 const totalPage = ref(0)
 const folwTitle = ref("新增流程")
@@ -135,7 +142,7 @@ onShow(() => {
     getBlogList()
 })
 onReachBottom(() => {
-     
+
     pageIndex.value++
     getBlogList()
 })
@@ -211,7 +218,8 @@ const getFlowList = async (v) => {
     let params = {
         hostID: detail.value.id,
         pageIndex: 1,
-        pageSize: 1000
+        pageSize: 1000,
+        flowType: 1
     }
     const res = await $http.post("/flow/get_flow_list", params)
     flowList.value = res.data.records
@@ -316,22 +324,27 @@ const handleDateConfirm = (type, value) => {
             color: rgb(236, 26, 26);
             background-color: rgba(236, 26, 26, 0.1);
         }
+
         .red {
             color: rgba(245, 114, 80, 1);
             background-color: rgba(245, 114, 80, .1);
         }
+
         .orange {
             color: rgba(245, 172, 55, 1);
             background-color: rgba(245, 172, 55, .1);
         }
+
         .green {
             color: rgba(105, 198, 110, 1);
             background-color: rgba(105, 198, 110, .1);
         }
+
         .cyan {
             color: rgba(84, 112, 198, 1);
             background-color: rgba(84, 112, 198, .1);
         }
+
         .blue {
             color: rgba(80, 129, 194, 1);
             background-color: rgba(80, 129, 194, .1);
@@ -435,6 +448,7 @@ const handleDateConfirm = (type, value) => {
         overflow: hidden;
         box-sizing: border-box;
         margin-bottom: 30rpx;
+
         &:deep(.u-border-bottom) {
             border: none;
         }
