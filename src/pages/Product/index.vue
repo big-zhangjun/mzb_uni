@@ -66,7 +66,7 @@ const filterData = ref([
         type: '',
         checkList: [],
         children: [
-            {
+        {
                 label: "热压罐",
                 id: "热压罐"
             },
@@ -97,6 +97,10 @@ const filterData = ref([
             {
                 label: "烘箱",
                 id: "烘箱"
+            },
+            {
+                label: "缓冲罐",
+                id: "缓冲罐"
             }
         ]
     },

@@ -103,17 +103,22 @@
         <view class="floder" v-show="current == 3">
             <floder :detail="detail"/>
         </view>
+        <view class="floder" v-if="current == 4">
+            <logList  :queryParams="{id: detail.id}"/>
+        </view>
+
     </view>
 </template>
 
 <script setup>
 import { reactive, ref, watch } from 'vue';
 import * as $http from '../../request/index'
+import logList from './components/logList.vue';
 import { onLoad, onReachBottom, onShow } from '@dcloudio/uni-app';
 import collapse from './components/collapse.vue';
 import floder from './components/floder.vue';
 
-const current = ref(3)
+const current = ref(0)
 const data = ref(null)
 const detail = ref({})
 const flowList = ref([])
@@ -123,6 +128,7 @@ const list1 = reactive([
     { name: '电气流程' },
     { name: '工作日志' },
     { name: '文件详情' },
+    { name: '备忘录' },
 ]);
 const totalPage = ref(0)
 const folwTitle = ref("新增流程")

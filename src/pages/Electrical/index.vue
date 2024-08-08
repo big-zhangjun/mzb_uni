@@ -102,6 +102,10 @@ const filterData = ref([
             {
                 label: "烘箱",
                 id: "烘箱"
+            },
+            {
+                label: "缓冲罐",
+                id: "缓冲罐"
             }
         ]
     },

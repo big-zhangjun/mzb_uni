@@ -8,7 +8,8 @@
                     <view class="item" v-for="(formData, index) in item" :key="formData.key">
                         <view class="label" :class="{ required: formData.required }">{{ formData.label }}：</view>
                         <view class="value">
-                            <input type="text" minlength="6" v-model="formData.value" placeholder="请输入" v-if="!formData.type">
+                            <input type="text" minlength="6" v-model="formData.value" placeholder="请输入"
+                                v-if="!formData.type">
                             <view v-else @click="handleProductCheck(formData.value, formData.type, { idx, index })">{{
                                 formData.value ||
                                 '请选择' }}</view>
@@ -39,7 +40,11 @@ const columns = ref([
         "储气罐",
         "液压釜",
         "固化炉",
-        "系统改造"
+        "浸渍罐",
+        "系统改造",
+        "冷却系统",
+        "烘箱",
+        "缓冲罐"
     ]
 ])
 // 响应式表单数据  
@@ -374,7 +379,7 @@ const validate = () => {
                 errors.value = `${field.label}是必填项`;
                 valid = false;
                 console.log(errors.value);
-            } else if(field.min && field.value.length <= 6) {
+            } else if (field.min && field.value.length <= 6) {
                 errors.value = `${field.label}不得小于6位`;
                 valid = false;
             }
